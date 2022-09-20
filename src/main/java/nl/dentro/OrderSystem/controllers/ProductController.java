@@ -28,7 +28,7 @@ public class ProductController {
     @GetMapping("")
     public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(value = "category", required = false) Optional<String> category) {
         List<ProductDto> dtos;
-        if (category.isEmpty()){
+        if (category.isEmpty()) {
             dtos = productService.getAllProducts();
         } else {
             dtos = productService.getAllProductsByCategory(category.get());
