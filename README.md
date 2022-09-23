@@ -12,5 +12,8 @@
 | Delete product by id             | DELETE  | http://localhost:8090/products/value          | 1001          |
 | Add new user                     | POST    | http://localhost:8090/users                   |               |
 | Get user by id                   | GET     | http://localhost:8090/users/value             | 1001          |
+| Create order                     | POST    | http://localhost:8090/orders                  |               |
+| Display order by id              | GET     | http://localhost:8090/orders/value            | 1             |
+| Process payment                  | PUT     | http://localhost:8090/orders/value            | 1             |
 
 

@@ -1,6 +1,7 @@
 package nl.dentro.OrderSystem.models;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(name = "products")
@@ -13,6 +14,9 @@ public class Product {
     private String category;
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @OneToMany
+    private Collection<OrderProduct> orderProduct;
 
     public Long getId() {
         return id;
@@ -54,4 +58,11 @@ public class Product {
         this.description = description;
     }
 
-}
+    public Collection<OrderProduct> getOrderProduct() {
+        return orderProduct;
+    }
+
+    public void setOrderProduct(Collection<OrderProduct> orderProduct) {
+        this.orderProduct = orderProduct;
+    }
+    }

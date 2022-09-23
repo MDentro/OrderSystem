@@ -33,6 +33,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDto getProductById(Long id) {
+        if (availableProductId(id)) {
+            Product product = productRepository.findById(id).get();
+            ProductDto productDto = toProductDto(product);
+            return productDto;
+        } else {
+            throw new RecordNotFoundException("Could not find product with id: " + id + ".");
+        }
+    }
+
+
+    @Override
     public List<ProductDto> fromProductListToDtoList(List<Product> products) {
         List<ProductDto> productDtoList = new ArrayList<>();
         for (Product product : products) {
@@ -45,9 +57,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto createProduct(ProductInputDto productInputDto) {
         Product product = fromProductDto(productInputDto);
-        productRepository.save(product);
-        ProductDto savedProduct = toProductDto(product);
-        return savedProduct;
+        Product savedProduct = productRepository.save(product);
+        ProductDto productDto = toProductDto(savedProduct);
+        return productDto;
     }
 
     @Override

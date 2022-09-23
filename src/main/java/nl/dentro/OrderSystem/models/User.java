@@ -1,5 +1,7 @@
 package nl.dentro.OrderSystem.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,6 +14,10 @@ public class User {
     private String lastName;
     private String email;
     private String phoneNumber;
+
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    Order order;
 
     public Long getId() {
         return id;
@@ -51,5 +57,13 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }

@@ -27,10 +27,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserInputDto userInputDto) {
+    public User createUser(UserInputDto userInputDto) {
         User user = fromUserDto(userInputDto);
-        userRepository.save(user);
-        UserDto savedUser = toUserDto(user);
+        User savedUser = userRepository.save(user);
+
         return savedUser;
     }
 

@@ -2,6 +2,7 @@ package nl.dentro.OrderSystem.controllers;
 
 import nl.dentro.OrderSystem.dtos.ProductDto;
 import nl.dentro.OrderSystem.dtos.ProductInputDto;
+import nl.dentro.OrderSystem.dtos.UserDto;
 import nl.dentro.OrderSystem.services.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,12 @@ public class ProductController {
             dtos = productService.getAllProductsByCategory(category.get());
         }
         return ResponseEntity.ok().body(dtos);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getProductById(@PathVariable Long id) {
+        ProductDto productDto = productService.getProductById(id);
+        return ResponseEntity.ok().body(productDto);
     }
 
     @PostMapping("")

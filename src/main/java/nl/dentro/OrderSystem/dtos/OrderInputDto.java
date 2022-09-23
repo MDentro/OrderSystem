@@ -1,8 +1,10 @@
 package nl.dentro.OrderSystem.dtos;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.Collection;
 
-public class UserInputDto {
+public class OrderInputDto {
 
     private Long id;
     @NotBlank
@@ -18,12 +20,7 @@ public class UserInputDto {
     private String phoneNumber;
 
 
-    public UserInputDto(String firstName, String lastName, String email, String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
+    private Collection<Long> productIds = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -64,4 +61,13 @@ public class UserInputDto {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public Collection<Long> getProductIds() {
+        return productIds;
+    }
+
+    public void setProductIds(Collection<Long> productIds) {
+        this.productIds = productIds;
+    }
+
 }
