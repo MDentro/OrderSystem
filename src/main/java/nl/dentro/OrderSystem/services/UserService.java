@@ -7,7 +7,7 @@ import nl.dentro.OrderSystem.models.User;
 public interface UserService {
     UserDto getUserById(Long id);
 
-    UserDto createUser(UserInputDto userInputDto);
+    User createUser(UserInputDto userInputDto);
 
     User fromUserDto(UserInputDto userInputDto);
 

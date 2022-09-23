@@ -26,16 +26,4 @@ public class UserController {
         UserDto userDto = userService.getUserById(id);
         return ResponseEntity.ok().body(userDto);
     }
-
-    @PostMapping("")
-    public ResponseEntity<Object> createUser(@Valid @RequestBody UserInputDto userInputDto, BindingResult br) {
-        if (br.hasErrors()) {
-            return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
-        } else {
-            UserDto userDto = userService.createUser(userInputDto);
-            return new ResponseEntity<>(userDto, HttpStatus.CREATED);
-        }
-    }
-
-
 }

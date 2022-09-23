@@ -9,3 +9,4 @@ VALUES (1001, 'APTITLIG', 17.99, 'cooking', 'The chopping board collects meat an
 INSERT INTO users(id, first_name, last_name, email, phone_number)
 VALUES (1001, 'Charles', 'Darwin', 'charles@darwin.com', '06-12345678'),
        (1002, 'Albert', 'Einstein', 'albert@einstein.com', '06-87654321');
+

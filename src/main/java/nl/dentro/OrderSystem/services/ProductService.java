@@ -11,6 +11,8 @@ public interface ProductService {
 
     List<ProductDto> getAllProductsByCategory(String category);
 
+    ProductDto getProductById(Long id);
+
     List<ProductDto> fromProductListToDtoList(List<Product> products);
 
     ProductDto createProduct(ProductInputDto productInputDto);
