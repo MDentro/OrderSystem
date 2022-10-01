@@ -14,6 +14,7 @@
 | Get user by id                    | GET     | http://localhost:8090/users/value                   | 1001          |
 | Create order                      | POST    | http://localhost:8090/orders                        |               |
 | Display order by id               | GET     | http://localhost:8090/orders/value                  | 1             |
+| Display unpaid orders             | GET     | http://localhost:8090/orders                        |               |
 | Process payment                   | PUT     | http://localhost:8090/orders/value                  | 1             |
 | Display available stock locations | GET     | http://localhost:8090/stocklocations                |               |
 | Create stock location             | POST    | http://localhost:8090/stocklocations                |               |
