@@ -18,12 +18,14 @@ VALUES  (1001, 'APTITLIG', 17.99, 'cooking', 'The chopping board collects meat a
         (1006, 'VARDAGEN', 5.99, 'baking', 'Help you get the right amount of spices, flour or other flavourings when cooking or baking. Take up little storage space since the dimensions fit in each other. Feel free to hang them on a hook over the kitchen worktop so you always have them close at hand.', 105);
 
 INSERT INTO users (id, first_name, last_name, email, phone_number)
-VALUES (200, 'Charles', 'Darwin', 'charles@darwin.com', '06-12345678'),
-       (201, 'Albert', 'Einstein', 'albert@einstein.com', '06-87654321');
+VALUES  (200, 'Charles', 'Darwin', 'charles@darwin.com', '06-12345678'),
+        (201, 'Albert', 'Einstein', 'albert@einstein.com', '06-87654321'),
+        (202, 'Isaac', 'Newton', 'isaac@newton.com', '06-18273645');
 
 INSERT INTO orders (id, paid, total_price, user_id)
-VALUES (300, false, 27.97, 200),
-       (301, false, 17.99, 201);
+VALUES  (300, false, 27.97, 200),
+        (301, false, 17.99, 201),
+        (302, true, 4.99, 202);
 
 INSERT INTO order_product (order_id, product_id)
 VALUES  (300, 1001);
@@ -31,5 +33,9 @@ INSERT INTO order_product (order_id, product_id)
 VALUES  (300, 1002);
 INSERT INTO order_product (order_id, product_id)
 VALUES  (300, 1003);
+
 INSERT INTO order_product (order_id, product_id)
 VALUES  (301, 1005);
+
+INSERT INTO order_product (order_id, product_id)
+VALUES  (302, 1002);

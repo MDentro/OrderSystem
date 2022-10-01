@@ -1,14 +1,9 @@
 package nl.dentro.OrderSystem.services;
 
-import nl.dentro.OrderSystem.dtos.OrderDto;
-import nl.dentro.OrderSystem.dtos.OrderInputDto;
-import nl.dentro.OrderSystem.dtos.UserInputDto;
+import nl.dentro.OrderSystem.dtos.*;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
 import nl.dentro.OrderSystem.exceptions.UnpaidOrderNotFoundException;
-import nl.dentro.OrderSystem.models.Order;
-import nl.dentro.OrderSystem.models.OrderProduct;
-import nl.dentro.OrderSystem.models.Product;
-import nl.dentro.OrderSystem.models.User;
+import nl.dentro.OrderSystem.models.*;
 import nl.dentro.OrderSystem.repositories.OrderProductRepository;
 import nl.dentro.OrderSystem.repositories.OrderRepository;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
@@ -40,6 +35,16 @@ public class OrderServiceImpl implements OrderService {
         this.productRepository = productRepository;
         this.orderProductService = orderProductService;
         this.orderProductRepository = orderProductRepository;
+    }
+
+    @Override
+    public List<UnpaidOrderDto> getUnpaidOrders() {
+        List<Order> unpaidOrderList = orderRepository.findByPaidIsFalse();
+        if (unpaidOrderList.size() == 0) {
+            throw new RecordNotFoundException("Could not find any unpaid orders.");
+        }
+
+        return fromUnpaidOrderListToUnpaidOrderDtoList(unpaidOrderList);
     }
 
     @Override
@@ -130,6 +135,16 @@ public class OrderServiceImpl implements OrderService {
 
     public boolean availableOrderId(Long id) {
         return orderRepository.findById(id).isPresent();
+    }
+
+
+    public List<UnpaidOrderDto> fromUnpaidOrderListToUnpaidOrderDtoList(List<Order> unpaidOrderList) {
+        List<UnpaidOrderDto> unpaidOrderDtoList = new ArrayList<>();
+        for (Order order : unpaidOrderList) {
+            UnpaidOrderDto dto = new UnpaidOrderDto(order.getId(), order.getTotalPrice(), order.getUser().getFirstName(), order.getUser().getLastName());
+            unpaidOrderDtoList.add(dto);
+        }
+        return unpaidOrderDtoList;
     }
 
 }
