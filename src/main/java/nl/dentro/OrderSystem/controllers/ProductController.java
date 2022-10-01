@@ -1,8 +1,8 @@
 package nl.dentro.OrderSystem.controllers;
 
+import nl.dentro.OrderSystem.dtos.IdInputDto;
 import nl.dentro.OrderSystem.dtos.ProductDto;
 import nl.dentro.OrderSystem.dtos.ProductInputDto;
-import nl.dentro.OrderSystem.dtos.UserDto;
 import nl.dentro.OrderSystem.services.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +67,11 @@ public class ProductController {
     public ResponseEntity<Object> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/stocklocation")
+    public void assignStockLocationToProduct(@PathVariable("id") Long id, @RequestBody IdInputDto input) {
+        productService.assignStockLocationToProduct(id, input.getId());
     }
 
 }

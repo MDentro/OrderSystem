@@ -1,24 +1,13 @@
-package nl.dentro.OrderSystem.models;
+package nl.dentro.OrderSystem.dtos;
 
-import nl.dentro.OrderSystem.dtos.StockLocationDto;
-
-import javax.persistence.*;
-import java.util.Collection;
-
-@Entity
-@Table(name = "products")
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductOnOrderDto {
     private Long id;
     private String name;
     private Double price;
     private String category;
-    @Column(length = 1000)
     private String description;
 
-    @OneToOne
-    StockLocation stockLocation;
+    private StockLocationDto stockLocationDto;
 
     public Long getId() {
         return id;
@@ -60,12 +49,11 @@ public class Product {
         this.description = description;
     }
 
-    public StockLocation getStockLocation() {
-        return stockLocation;
+    public StockLocationDto getStockLocationDto() {
+        return stockLocationDto;
     }
 
-    public void setStockLocation(StockLocation stockLocation) {
-        this.stockLocation = stockLocation;
+    public void setStockLocationDto(StockLocationDto stockLocationDto) {
+        this.stockLocationDto = stockLocationDto;
     }
-
 }
