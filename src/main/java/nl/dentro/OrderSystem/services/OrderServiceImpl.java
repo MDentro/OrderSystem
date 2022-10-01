@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto getOrderById(Long id) {
-        if(!orderRepository.findById(id).isPresent()) {
+        if (!orderRepository.findById(id).isPresent()) {
             throw new RecordNotFoundException("Could not find order with id " + id + ".");
         }
 
@@ -54,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = orderRepository.findById(id).get();
             Collection<OrderProduct> productList = orderProductRepository.findAllProductsByOrderId(id);
             for (OrderProduct orderProduct : productList) {
-                productDtoList.add(productService.toProductDto(orderProduct.getProduct()));
+                productDtoList.add(productService.toProductOnOrderDto(orderProduct.getProduct()));
             }
             orderDto.setId(order.getId());
             orderDto.setUserDto(userService.toUserDto(order.getUser()));

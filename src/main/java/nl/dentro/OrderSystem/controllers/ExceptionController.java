@@ -1,5 +1,6 @@
 package nl.dentro.OrderSystem.controllers;
 
+import nl.dentro.OrderSystem.exceptions.AvailableStockLocationNotFoundException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
 import nl.dentro.OrderSystem.exceptions.UnpaidOrderNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,11 @@ public class ExceptionController {
 
     @ExceptionHandler(value = UnpaidOrderNotFoundException.class)
     public ResponseEntity<String> exception(UnpaidOrderNotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = AvailableStockLocationNotFoundException.class)
+    public ResponseEntity<String> exception(AvailableStockLocationNotFoundException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

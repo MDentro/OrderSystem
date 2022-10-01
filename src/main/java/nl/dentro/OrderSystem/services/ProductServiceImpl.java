@@ -2,10 +2,13 @@ package nl.dentro.OrderSystem.services;
 
 import nl.dentro.OrderSystem.dtos.ProductDto;
 import nl.dentro.OrderSystem.dtos.ProductInputDto;
+import nl.dentro.OrderSystem.dtos.ProductOnOrderDto;
+import nl.dentro.OrderSystem.exceptions.AvailableStockLocationNotFoundException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
 import nl.dentro.OrderSystem.models.Product;
+import nl.dentro.OrderSystem.models.StockLocation;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
+import nl.dentro.OrderSystem.repositories.StockLocationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,8 +19,14 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    private final StockLocationRepository stockLocationRepository;
+
+    private final StockLocationService stockLocationService;
+
+    public ProductServiceImpl(ProductRepository productRepository, StockLocationRepository stockLocationRepository, StockLocationService stockLocationService) {
         this.productRepository = productRepository;
+        this.stockLocationRepository = stockLocationRepository;
+        this.stockLocationService = stockLocationService;
     }
 
     @Override
@@ -40,6 +49,29 @@ public class ProductServiceImpl implements ProductService {
             return productDto;
         } else {
             throw new RecordNotFoundException("Could not find product with id: " + id + ".");
+        }
+    }
+
+    @Override
+    public void assignStockLocationToProduct(Long id, Long input) {
+        if (availableProductId(id) && availableStockLocationId(input)) {
+            StockLocation stockLocation = stockLocationRepository.findById(input).get();
+            if (stockLocation.isAvailable()) {
+                Product product = productRepository.findById(id).get();
+                product.setStockLocation(stockLocation);
+                stockLocation.setAvailable(false);
+                productRepository.save(product);
+                stockLocationRepository.save(stockLocation);
+            } else {
+                throw new AvailableStockLocationNotFoundException("Stock location  with id: " + input + " is already in use.");
+            }
+
+        } else if (!availableProductId(id) && !availableStockLocationId(input)) {
+            throw new RecordNotFoundException("Could not find product with id: " + id + " and could not find stock location with id: " + input + ".");
+        } else if (!availableProductId(id)) {
+            throw new RecordNotFoundException("Could not find product with id: " + id + ".");
+        } else if (!availableStockLocationId(input)) {
+            throw new RecordNotFoundException("Could not find stock location with id: " + input + ".");
         }
     }
 
@@ -74,10 +106,20 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long id) {
-        try {
+        if (availableProductId(id)) {
+            setStockLocationAvailable(id);
             productRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } else {
             throw new RecordNotFoundException("Could not find product with id: " + id + ".");
+        }
+    }
+
+    @Override
+    public void setStockLocationAvailable(Long id) {
+        Product product = productRepository.findById(id).get();
+        StockLocation stockLocation = product.getStockLocation();
+        if (stockLocation != null) {
+            stockLocation.setAvailable(true);
         }
     }
 
@@ -121,8 +163,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductOnOrderDto toProductOnOrderDto(Product product) {
+        var dto = new ProductOnOrderDto();
+        dto.setId(product.getId());
+        dto.setName(product.getName());
+        dto.setPrice(product.getPrice());
+        dto.setCategory(product.getCategory());
+        dto.setDescription(product.getDescription());
+        if(product.getStockLocation() != null) {
+            dto.setStockLocationDto(stockLocationService.toStockLocationDto(product.getStockLocation()));
+        }
+
+        return dto;
+    }
+
+    @Override
     public boolean availableProductId(Long id) {
         return productRepository.findById(id).isPresent();
     }
 
+    @Override
+    public boolean availableStockLocationId(Long id) {
+        return stockLocationRepository.findById(id).isPresent();
+    }
 }

@@ -2,6 +2,7 @@ package nl.dentro.OrderSystem.services;
 
 import nl.dentro.OrderSystem.dtos.ProductDto;
 import nl.dentro.OrderSystem.dtos.ProductInputDto;
+import nl.dentro.OrderSystem.dtos.ProductOnOrderDto;
 import nl.dentro.OrderSystem.models.Product;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public interface ProductService {
 
     ProductDto getProductById(Long id);
 
+    void assignStockLocationToProduct(Long id, Long input);
+
     List<ProductDto> fromProductListToDtoList(List<Product> products);
 
     ProductDto createProduct(ProductInputDto productInputDto);
@@ -21,11 +24,17 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
+    void setStockLocationAvailable(Long id);
+
     void saveChanges(Long id, Product updatedProduct);
 
     Product fromProductDto(ProductInputDto productInputDto);
 
     ProductDto toProductDto(Product product);
 
+    ProductOnOrderDto toProductOnOrderDto(Product product);
+
     boolean availableProductId(Long id);
+
+    boolean availableStockLocationId(Long id);
 }
