@@ -22,4 +22,16 @@ INSERT INTO users (id, first_name, last_name, email, phone_number)
 VALUES (200, 'Charles', 'Darwin', 'charles@darwin.com', '06-12345678'),
        (201, 'Albert', 'Einstein', 'albert@einstein.com', '06-87654321');
 
+INSERT INTO orders (id, paid, total_price, user_id)
+VALUES (300, false, 27.97, 200),
+       (301, false, 17.99, 201);
 
+
+INSERT INTO order_product (order_id, product_id)
+VALUES  (300, 1001);
+INSERT INTO order_product (order_id, product_id)
+VALUES  (300, 1002);
+INSERT INTO order_product (order_id, product_id)
+VALUES  (300, 1003);
+INSERT INTO order_product (order_id, product_id)
+VALUES  (301, 1005);
