@@ -2,7 +2,6 @@ package nl.dentro.OrderSystem.controllers;
 
 import nl.dentro.OrderSystem.dtos.OrderDto;
 import nl.dentro.OrderSystem.dtos.OrderInputDto;
-import nl.dentro.OrderSystem.dtos.ProductDto;
 import nl.dentro.OrderSystem.dtos.UnpaidOrderDto;
 import nl.dentro.OrderSystem.services.OrderService;
 import org.springframework.http.HttpStatus;

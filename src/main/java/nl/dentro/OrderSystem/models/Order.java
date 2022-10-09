@@ -12,12 +12,12 @@ public class Order {
     private boolean paid;
 
     @OneToOne
-    User user;
+    UserData userData;
 
-    public Order( Double totalPrice, boolean paid, User user) {
+    public Order( Double totalPrice, boolean paid, UserData userData) {
         this.totalPrice = totalPrice;
         this.paid = paid;
-        this.user = user;
+        this.userData = userData;
     }
 
     public Order() {
@@ -48,11 +48,11 @@ public class Order {
         this.paid = paid;
     }
 
-    public User getUser() {
-        return user;
+    public UserData getUserData() {
+        return userData;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserData(UserData userData) {
+        this.userData = userData;
     }
 }

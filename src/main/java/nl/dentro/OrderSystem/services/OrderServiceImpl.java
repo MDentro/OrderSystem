@@ -18,7 +18,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-    private final UserService userService;
+    private final UserDataService userDataService;
 
     private final ProductService productService;
 
@@ -28,9 +28,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderProductRepository orderProductRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserService userService, ProductService productService, ProductRepository productRepository, OrderProductService orderProductService, OrderProductRepository orderProductRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, UserDataService userDataService, ProductService productService, ProductRepository productRepository, OrderProductService orderProductService, OrderProductRepository orderProductRepository) {
         this.orderRepository = orderRepository;
-        this.userService = userService;
+        this.userDataService = userDataService;
         this.productService = productService;
         this.productRepository = productRepository;
         this.orderProductService = orderProductService;
@@ -62,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
                 productDtoList.add(productService.toProductOnOrderDto(orderProduct.getProduct()));
             }
             orderDto.setId(order.getId());
-            orderDto.setUserDto(userService.toUserDto(order.getUser()));
+            orderDto.setUserDataDto(userDataService.toUserDataDto(order.getUserData()));
             orderDto.setPaid(order.isPaid());
             orderDto.setTotalPrice(order.getTotalPrice());
         }
@@ -75,8 +75,8 @@ public class OrderServiceImpl implements OrderService {
         List<Long> idList = new ArrayList<>();
         CreateIdList(idList, orderInputDto);
         checkExistingProductById(idList);
-        User user = userService.createUser(createUserInputDto(orderInputDto));
-        Order order = new Order(calculateTotalBalance(idList), false, user);
+        UserData userData = userDataService.createUserData(createUserDataInputDto(orderInputDto));
+        Order order = new Order(calculateTotalBalance(idList), false, userData);
         Order savedOrder = orderRepository.save(order);
         saveOrderProduct(idList, savedOrder);
     }
@@ -129,8 +129,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    public UserInputDto createUserInputDto(OrderInputDto orderInputDto) {
-        return new UserInputDto(orderInputDto.getFirstName(), orderInputDto.getLastName(), orderInputDto.getEmail(), orderInputDto.getPhoneNumber());
+    public UserDataInputDto createUserDataInputDto(OrderInputDto orderInputDto) {
+        return new UserDataInputDto(orderInputDto.getFirstName(), orderInputDto.getLastName(), orderInputDto.getEmail(), orderInputDto.getPhoneNumber());
     }
 
     public boolean availableOrderId(Long id) {
@@ -141,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
     public List<UnpaidOrderDto> fromUnpaidOrderListToUnpaidOrderDtoList(List<Order> unpaidOrderList) {
         List<UnpaidOrderDto> unpaidOrderDtoList = new ArrayList<>();
         for (Order order : unpaidOrderList) {
-            UnpaidOrderDto dto = new UnpaidOrderDto(order.getId(), order.getTotalPrice(), order.getUser().getFirstName(), order.getUser().getLastName());
+            UnpaidOrderDto dto = new UnpaidOrderDto(order.getId(), order.getTotalPrice(), order.getUserData().getFirstName(), order.getUserData().getLastName());
             unpaidOrderDtoList.add(dto);
         }
         return unpaidOrderDtoList;

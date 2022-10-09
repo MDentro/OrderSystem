@@ -10,7 +10,7 @@ public class OrderDto {
     private Double totalPrice;
     private boolean paid;
 
-    private UserDto userDto;
+    private UserDataDto userDataDto;
 
     Collection<ProductDto> productsDtoCollection = new ArrayList<>();
 
@@ -39,12 +39,12 @@ public class OrderDto {
         this.paid = paid;
     }
 
-    public UserDto getUserDto() {
-        return userDto;
+    public UserDataDto getUserDataDto() {
+        return userDataDto;
     }
 
-    public void setUserDto(UserDto userDto) {
-        this.userDto = userDto;
+    public void setUserDataDto(UserDataDto userDataDto) {
+        this.userDataDto = userDataDto;
     }
 
     public Collection<ProductDto> getProductsDtoCollection() {

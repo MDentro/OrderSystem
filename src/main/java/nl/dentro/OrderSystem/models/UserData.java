@@ -1,29 +1,23 @@
-package nl.dentro.OrderSystem.dtos;
+package nl.dentro.OrderSystem.models;
 
-import javax.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class UserInputDto {
+import javax.persistence.*;
 
+@Entity
+@Table(name = "user_datas")
+public class UserData {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
     private String firstName;
-
-    @NotBlank
     private String lastName;
-
-    @NotBlank
     private String email;
-
-    @NotBlank
     private String phoneNumber;
 
-
-    public UserInputDto(String firstName, String lastName, String email, String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
+    @OneToOne(mappedBy = "userData")
+    @JsonIgnore
+    Order order;
 
     public Long getId() {
         return id;
@@ -63,5 +57,13 @@ public class UserInputDto {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }
