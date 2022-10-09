@@ -16,6 +16,8 @@ public interface ProductService {
 
     void assignStockLocationToProduct(Long id, Long input);
 
+    void assignImageToProduct(String name, Long productId);
+
     List<ProductDto> fromProductListToDtoList(List<Product> products);
 
     ProductDto createProduct(ProductInputDto productInputDto);
@@ -37,4 +39,5 @@ public interface ProductService {
     boolean availableProductId(Long id);
 
     boolean availableStockLocationId(Long id);
+
 }

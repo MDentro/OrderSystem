@@ -5,9 +5,10 @@ public class ProductOnOrderDto {
     private String name;
     private Double price;
     private String category;
-    private String description;
 
     private StockLocationDto stockLocationDto;
+
+    private ImageUploadResponseDto imageUploadResponseDto;
 
     public Long getId() {
         return id;
@@ -41,19 +42,19 @@ public class ProductOnOrderDto {
         this.category = category;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public StockLocationDto getStockLocationDto() {
         return stockLocationDto;
     }
 
     public void setStockLocationDto(StockLocationDto stockLocationDto) {
         this.stockLocationDto = stockLocationDto;
+    }
+
+    public ImageUploadResponseDto getImageUploadResponseDto() {
+        return imageUploadResponseDto;
+    }
+
+    public void setImageUploadResponseDto(ImageUploadResponseDto imageUploadResponseDto) {
+        this.imageUploadResponseDto = imageUploadResponseDto;
     }
 }
