@@ -1,12 +1,29 @@
 package nl.dentro.OrderSystem.dtos;
 
-public class UserDto {
+import javax.validation.constraints.NotBlank;
+
+public class UserDataInputDto {
 
     private Long id;
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
+
+    @NotBlank
     private String email;
+
+    @NotBlank
     private String phoneNumber;
+
+
+    public UserDataInputDto(String firstName, String lastName, String email, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
 
     public Long getId() {
         return id;

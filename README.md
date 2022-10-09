@@ -11,7 +11,6 @@
 | Update product by id                                          | PUT     | http://localhost:8090/products/value               | 1001          |
 | Delete product by id (delete image if exists)                 | DELETE  | http://localhost:8090/products/value               | 1001          |
 | Assign stock location to product                              | PUT     | http://localhost:8090/products/value/stocklocation | 1001          |
-| Get user by id                                                | GET     | http://localhost:8090/users/value                  | 200           |
 | Create order                                                  | POST    | http://localhost:8090/orders                       | -             |
 | Display order by id                                           | GET     | http://localhost:8090/orders/value                 | 300           |
 | Display unpaid orders                                         | GET     | http://localhost:8090/orders                       | -             |
