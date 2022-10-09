@@ -4,15 +4,19 @@ import nl.dentro.OrderSystem.dtos.ProductDto;
 import nl.dentro.OrderSystem.dtos.ProductInputDto;
 import nl.dentro.OrderSystem.dtos.ProductOnOrderDto;
 import nl.dentro.OrderSystem.exceptions.AvailableStockLocationNotFoundException;
+import nl.dentro.OrderSystem.exceptions.RecordCanNotBeDeletedException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
+import nl.dentro.OrderSystem.models.ImageUploadResponse;
 import nl.dentro.OrderSystem.models.Product;
 import nl.dentro.OrderSystem.models.StockLocation;
+import nl.dentro.OrderSystem.repositories.ImageUploadRepository;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
 import nl.dentro.OrderSystem.repositories.StockLocationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -23,10 +27,19 @@ public class ProductServiceImpl implements ProductService {
 
     private final StockLocationService stockLocationService;
 
-    public ProductServiceImpl(ProductRepository productRepository, StockLocationRepository stockLocationRepository, StockLocationService stockLocationService) {
+    private final ImageUploadRepository imageUploadRepository;
+
+    private final ImageService imageService;
+
+    private final OrderProductService orderProductService;
+
+    public ProductServiceImpl(ProductRepository productRepository, StockLocationRepository stockLocationRepository, StockLocationService stockLocationService, ImageUploadRepository imageUploadRepository, ImageService imageService, OrderProductService orderProductService) {
         this.productRepository = productRepository;
         this.stockLocationRepository = stockLocationRepository;
         this.stockLocationService = stockLocationService;
+        this.imageUploadRepository = imageUploadRepository;
+        this.imageService = imageService;
+        this.orderProductService = orderProductService;
     }
 
     @Override
@@ -75,6 +88,25 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public void assignImageToProduct(String name, Long productId) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        Optional<ImageUploadResponse> imageUploadResponse = imageUploadRepository.findByFileName(imageService.toImageResponseFileName(name));
+        String fileName = "";
+
+        if (optionalProduct.isPresent() && imageUploadResponse.isPresent()) {
+            ImageUploadResponse photo = imageUploadResponse.get();
+            Product product = optionalProduct.get();
+            if (product.getFile() != null) {
+                fileName = product.getFile().getFileName();
+            }
+            product.setFile(photo);
+            productRepository.save(product);
+            if (!fileName.equals("")) {
+                imageService.deleteImage(fileName);
+            }
+        }
+    }
 
     @Override
     public List<ProductDto> fromProductListToDtoList(List<Product> products) {
@@ -107,8 +139,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
         if (availableProductId(id)) {
-            setStockLocationAvailable(id);
-            productRepository.deleteById(id);
+            Product product = productRepository.findById(id).get();
+            if (orderProductService.isProductOrdered(id)) {
+                throw new RecordCanNotBeDeletedException("Product with id: " + id + " is used on an order and cannot be deleted.");
+            } else {
+                setStockLocationAvailable(id);
+                productRepository.deleteById(id);
+                if (product.getFile() != null) {
+                    imageService.deleteImage(product.getFile().getFileName());
+                }
+            }
         } else {
             throw new RecordNotFoundException("Could not find product with id: " + id + ".");
         }
@@ -159,6 +199,9 @@ public class ProductServiceImpl implements ProductService {
         dto.setPrice(product.getPrice());
         dto.setCategory(product.getCategory());
         dto.setDescription(product.getDescription());
+        if (product.getFile() != null) {
+            dto.setImageUploadResponseDto(imageService.toImageResponseDTO(product.getFile().getFileName(), product.getFile().getContentType(), product.getFile().getUrl()));
+        }
         return dto;
     }
 
@@ -169,11 +212,12 @@ public class ProductServiceImpl implements ProductService {
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
         dto.setCategory(product.getCategory());
-        dto.setDescription(product.getDescription());
-        if(product.getStockLocation() != null) {
+        if (product.getStockLocation() != null) {
             dto.setStockLocationDto(stockLocationService.toStockLocationDto(product.getStockLocation()));
         }
-
+        if (product.getFile() != null) {
+            dto.setImageUploadResponseDto(imageService.toImageResponseDTO(product.getFile().getFileName(), product.getFile().getContentType(), product.getFile().getUrl()));
+        }
         return dto;
     }
 
@@ -186,4 +230,5 @@ public class ProductServiceImpl implements ProductService {
     public boolean availableStockLocationId(Long id) {
         return stockLocationRepository.findById(id).isPresent();
     }
+
 }

@@ -20,6 +20,9 @@ public class Product {
     @OneToOne
     StockLocation stockLocation;
 
+    @OneToOne
+    ImageUploadResponse file;
+
     public Long getId() {
         return id;
     }
@@ -68,4 +71,11 @@ public class Product {
         this.stockLocation = stockLocation;
     }
 
+    public ImageUploadResponse getFile() {
+        return file;
+    }
+
+    public void setFile(ImageUploadResponse file) {
+        this.file = file;
+    }
 }

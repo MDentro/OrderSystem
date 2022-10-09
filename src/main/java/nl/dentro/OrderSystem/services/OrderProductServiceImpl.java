@@ -34,4 +34,12 @@ public class OrderProductServiceImpl implements OrderProductService {
         orderProductRepository.save(orderProduct);
     }
 
+    @Override
+    public boolean isProductOrdered(Long id) {
+        if (orderProductRepository.findAllOrdersByProductId(id).isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

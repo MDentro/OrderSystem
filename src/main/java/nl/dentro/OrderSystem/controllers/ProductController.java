@@ -1,6 +1,7 @@
 package nl.dentro.OrderSystem.controllers;
 
 import nl.dentro.OrderSystem.dtos.IdInputDto;
+import nl.dentro.OrderSystem.dtos.ImageUploadResponseDto;
 import nl.dentro.OrderSystem.dtos.ProductDto;
 import nl.dentro.OrderSystem.dtos.ProductInputDto;
 import nl.dentro.OrderSystem.services.ProductService;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -22,8 +24,11 @@ public class ProductController {
 
     private final ProductService productService;
 
-    public ProductController(ProductService productService) {
+    private final ImageController imageController;
+
+    public ProductController(ProductService productService, ImageController imageController) {
         this.productService = productService;
+        this.imageController = imageController;
     }
 
     @GetMapping("")
@@ -72,6 +77,15 @@ public class ProductController {
     @PutMapping("/{id}/stocklocation")
     public void assignStockLocationToProduct(@PathVariable("id") Long id, @RequestBody IdInputDto input) {
         productService.assignStockLocationToProduct(id, input.getId());
+    }
+
+    @PostMapping("/{id}/image")
+    public void assignImageToProduct(@PathVariable("id") Long productId,
+                                     @RequestBody MultipartFile file) {
+
+        ImageUploadResponseDto imageDto = imageController.singleFileUpload(file);
+
+        productService.assignImageToProduct(imageDto.getFileName(), productId);
     }
 
 }

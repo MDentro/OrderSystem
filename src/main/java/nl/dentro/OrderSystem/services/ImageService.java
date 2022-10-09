@@ -10,4 +10,8 @@ public interface ImageService {
     Resource downLoadFile(String fileName);
 
     void deleteImage(String fileName);
+
+    ImageUploadResponseDto toImageResponseDTO(String fileName, String contentType, String url);
+
+    String toImageResponseFileName(String name);
 }

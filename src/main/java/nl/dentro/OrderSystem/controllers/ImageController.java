@@ -24,9 +24,9 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    ResponseEntity<Object> singleFileUpload(@RequestParam("file") MultipartFile file){
+    ImageUploadResponseDto  singleFileUpload(@RequestParam("file") MultipartFile file){
         ImageUploadResponseDto ImageUploadResponseDto = imageService.saveFile(file);
-        return ResponseEntity.ok().body(ImageUploadResponseDto);
+        return ImageUploadResponseDto;
     }
 
     @GetMapping("/download/{fileName}")
@@ -40,12 +40,6 @@ public class ImageController {
         }
 
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + resource.getFilename()).body(resource);
-    }
-
-    @DeleteMapping( "/{fileName}")
-    public ResponseEntity<Object> deletePicture(@PathVariable String fileName) {
-        imageService.deleteImage(fileName);
-        return ResponseEntity.noContent().build();
     }
 
 }

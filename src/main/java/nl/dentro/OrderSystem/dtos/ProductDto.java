@@ -7,6 +7,8 @@ public class ProductDto {
     private String category;
     private String description;
 
+    private ImageUploadResponseDto imageUploadResponseDto;
+
     public Long getId() {
         return id;
     }
@@ -47,4 +49,11 @@ public class ProductDto {
         this.description = description;
     }
 
+    public ImageUploadResponseDto getImageUploadResponseDto() {
+        return imageUploadResponseDto;
+    }
+
+    public void setImageUploadResponseDto(ImageUploadResponseDto imageUploadResponseDto) {
+        this.imageUploadResponseDto = imageUploadResponseDto;
+    }
 }

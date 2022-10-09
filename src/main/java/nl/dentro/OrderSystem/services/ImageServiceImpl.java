@@ -34,6 +34,7 @@ public class ImageServiceImpl implements ImageService {
         this.fileStorageLocation = fileStorageLocation;
         this.imageUploadRepository = imageUploadRepository;
 
+
         try {
             Files.createDirectories(fileStoragePath);
         } catch (IOException e) {
@@ -83,8 +84,17 @@ public class ImageServiceImpl implements ImageService {
         imageUploadRepository.deleteByFileName(fileName);
     }
 
+    @Override
     public ImageUploadResponseDto toImageResponseDTO(String fileName, String contentType, String url) {
         ImageUploadResponseDto imageUploadResponseDto = new ImageUploadResponseDto(fileName, contentType, url);
         return imageUploadResponseDto;
     }
+
+    @Override
+    public String toImageResponseFileName(String name) {
+        ImageUploadResponse imageUploadResponse = new ImageUploadResponse();
+        imageUploadResponse.setFileName(name);
+        return imageUploadResponse.getFileName();
+    }
+
 }
