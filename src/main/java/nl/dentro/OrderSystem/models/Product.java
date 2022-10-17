@@ -1,9 +1,6 @@
 package nl.dentro.OrderSystem.models;
 
-import nl.dentro.OrderSystem.dtos.StockLocationDto;
-
 import javax.persistence.*;
-import java.util.Collection;
 
 @Entity
 @Table(name = "products")
@@ -21,7 +18,7 @@ public class Product {
     StockLocation stockLocation;
 
     @OneToOne
-    ImageUploadResponse file;
+    Image file;
 
     public Long getId() {
         return id;
@@ -71,11 +68,11 @@ public class Product {
         this.stockLocation = stockLocation;
     }
 
-    public ImageUploadResponse getFile() {
+    public Image getFile() {
         return file;
     }
 
-    public void setFile(ImageUploadResponse file) {
+    public void setFile(Image file) {
         this.file = file;
     }
 }

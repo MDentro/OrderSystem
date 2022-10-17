@@ -8,7 +8,7 @@ public class ProductOnOrderDto {
 
     private StockLocationDto stockLocationDto;
 
-    private ImageUploadResponseDto imageUploadResponseDto;
+    private ImageDto imageDto;
 
     public Long getId() {
         return id;
@@ -50,11 +50,11 @@ public class ProductOnOrderDto {
         this.stockLocationDto = stockLocationDto;
     }
 
-    public ImageUploadResponseDto getImageUploadResponseDto() {
-        return imageUploadResponseDto;
+    public ImageDto getImageDto() {
+        return imageDto;
     }
 
-    public void setImageUploadResponseDto(ImageUploadResponseDto imageUploadResponseDto) {
-        this.imageUploadResponseDto = imageUploadResponseDto;
+    public void setImageDto(ImageDto imageDto) {
+        this.imageDto = imageDto;
     }
 }

@@ -1,23 +1,19 @@
-package nl.dentro.OrderSystem.models;
+package nl.dentro.OrderSystem.dtos;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Entity
-public class ImageUploadResponse {
-
-    @Id
+public class ImageDto {
     private String fileName;
+
     private String contentType;
+
     private String url;
 
-    public ImageUploadResponse(String fileName, String contentType, String url) {
+    public ImageDto(String fileName, String contentType, String url) {
         this.fileName = fileName;
         this.contentType = contentType;
         this.url = url;
     }
 
-    public ImageUploadResponse() {
+    public ImageDto() {
     }
 
     public String getFileName() {

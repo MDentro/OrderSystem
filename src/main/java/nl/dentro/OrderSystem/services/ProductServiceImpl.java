@@ -6,10 +6,10 @@ import nl.dentro.OrderSystem.dtos.ProductOnOrderDto;
 import nl.dentro.OrderSystem.exceptions.AvailableStockLocationNotFoundException;
 import nl.dentro.OrderSystem.exceptions.RecordCanNotBeDeletedException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
-import nl.dentro.OrderSystem.models.ImageUploadResponse;
+import nl.dentro.OrderSystem.models.Image;
 import nl.dentro.OrderSystem.models.Product;
 import nl.dentro.OrderSystem.models.StockLocation;
-import nl.dentro.OrderSystem.repositories.ImageUploadRepository;
+import nl.dentro.OrderSystem.repositories.ImageRepository;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
 import nl.dentro.OrderSystem.repositories.StockLocationRepository;
 import org.springframework.stereotype.Service;
@@ -27,17 +27,17 @@ public class ProductServiceImpl implements ProductService {
 
     private final StockLocationService stockLocationService;
 
-    private final ImageUploadRepository imageUploadRepository;
+    private final ImageRepository imageRepository;
 
     private final ImageService imageService;
 
     private final OrderProductService orderProductService;
 
-    public ProductServiceImpl(ProductRepository productRepository, StockLocationRepository stockLocationRepository, StockLocationService stockLocationService, ImageUploadRepository imageUploadRepository, ImageService imageService, OrderProductService orderProductService) {
+    public ProductServiceImpl(ProductRepository productRepository, StockLocationRepository stockLocationRepository, StockLocationService stockLocationService, ImageRepository imageRepository, ImageService imageService, OrderProductService orderProductService) {
         this.productRepository = productRepository;
         this.stockLocationRepository = stockLocationRepository;
         this.stockLocationService = stockLocationService;
-        this.imageUploadRepository = imageUploadRepository;
+        this.imageRepository = imageRepository;
         this.imageService = imageService;
         this.orderProductService = orderProductService;
     }
@@ -91,18 +91,20 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void assignImageToProduct(String name, Long productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
-        Optional<ImageUploadResponse> imageUploadResponse = imageUploadRepository.findByFileName(imageService.toImageResponseFileName(name));
+        Optional<Image> image = imageRepository.findByFileName(imageService.toImageFileName(name));
         String fileName = "";
 
-        if (optionalProduct.isPresent() && imageUploadResponse.isPresent()) {
-            ImageUploadResponse photo = imageUploadResponse.get();
+        if (optionalProduct.isPresent() && image.isPresent()) {
+            Image photo = image.get();
             Product product = optionalProduct.get();
             if (product.getFile() != null) {
                 fileName = product.getFile().getFileName();
             }
+
             product.setFile(photo);
             productRepository.save(product);
-            if (!fileName.equals("")) {
+
+            if (!fileName.equals(photo.getFileName())) {
                 imageService.deleteImage(fileName);
             }
         }
@@ -200,7 +202,7 @@ public class ProductServiceImpl implements ProductService {
         dto.setCategory(product.getCategory());
         dto.setDescription(product.getDescription());
         if (product.getFile() != null) {
-            dto.setImageUploadResponseDto(imageService.toImageResponseDTO(product.getFile().getFileName(), product.getFile().getContentType(), product.getFile().getUrl()));
+            dto.setImageDto(imageService.toImageDTO(product.getFile().getFileName(), product.getFile().getContentType(), product.getFile().getUrl()));
         }
         return dto;
     }
@@ -216,7 +218,7 @@ public class ProductServiceImpl implements ProductService {
             dto.setStockLocationDto(stockLocationService.toStockLocationDto(product.getStockLocation()));
         }
         if (product.getFile() != null) {
-            dto.setImageUploadResponseDto(imageService.toImageResponseDTO(product.getFile().getFileName(), product.getFile().getContentType(), product.getFile().getUrl()));
+            dto.setImageDto(imageService.toImageDTO(product.getFile().getFileName(), product.getFile().getContentType(), product.getFile().getUrl()));
         }
         return dto;
     }

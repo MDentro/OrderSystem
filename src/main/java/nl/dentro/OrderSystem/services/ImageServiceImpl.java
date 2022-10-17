@@ -1,9 +1,10 @@
 package nl.dentro.OrderSystem.services;
 
-import nl.dentro.OrderSystem.dtos.ImageUploadResponseDto;
+import nl.dentro.OrderSystem.dtos.ImageDto;
+import nl.dentro.OrderSystem.exceptions.DeniedFileExtensionException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
-import nl.dentro.OrderSystem.models.ImageUploadResponse;
-import nl.dentro.OrderSystem.repositories.ImageUploadRepository;
+import nl.dentro.OrderSystem.models.Image;
+import nl.dentro.OrderSystem.repositories.ImageRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -26,14 +27,13 @@ public class ImageServiceImpl implements ImageService {
     private Path fileStoragePath;
     private final String fileStorageLocation;
 
-    private final ImageUploadRepository imageUploadRepository;
+    private final ImageRepository imageRepository;
 
-    public ImageServiceImpl(@Value("${my.upload_location}") String fileStorageLocation, ImageUploadRepository imageUploadRepository) {
+    public ImageServiceImpl(@Value("${my.upload_location}") String fileStorageLocation, ImageRepository imageRepository) {
         fileStoragePath = Paths.get(fileStorageLocation).toAbsolutePath().normalize();
 
         this.fileStorageLocation = fileStorageLocation;
-        this.imageUploadRepository = imageUploadRepository;
-
+        this.imageRepository = imageRepository;
 
         try {
             Files.createDirectories(fileStoragePath);
@@ -44,10 +44,15 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ImageUploadResponseDto saveFile(MultipartFile file) {
+    public ImageDto saveFile(MultipartFile file) {
         String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/download/").path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
         String contentType = file.getContentType();
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
+        if (allowFileExtension(fileName)) {
+            throw new DeniedFileExtensionException("Only file extensions: jpg / JPG / png / PNG are accepted, now your extension is: " + extension(fileName));
+        }
+
         Path filePath = Paths.get(fileStoragePath + "\\" + fileName);
 
         try {
@@ -55,8 +60,8 @@ public class ImageServiceImpl implements ImageService {
         } catch (IOException e) {
             throw new RuntimeException("Issue in storing the file", e);
         }
-        imageUploadRepository.save(new ImageUploadResponse(fileName, file.getContentType(), url));
-        return toImageResponseDTO(fileName, contentType, url);
+        imageRepository.save(new Image(fileName, file.getContentType(), url));
+        return toImageDTO(fileName, contentType, url);
     }
 
     @Override
@@ -81,20 +86,51 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteImage(String fileName) {
-        imageUploadRepository.deleteByFileName(fileName);
+        if (availableImageId(fileName)) {
+            Path filePath = Paths.get(fileStoragePath + "\\" + fileName);
+            try {
+                Files.delete(filePath);
+                imageRepository.deleteByFileName(fileName);
+            } catch (IOException e) {
+                throw new RuntimeException("Issue with deleting the file", e);
+            }
+        }
     }
 
     @Override
-    public ImageUploadResponseDto toImageResponseDTO(String fileName, String contentType, String url) {
-        ImageUploadResponseDto imageUploadResponseDto = new ImageUploadResponseDto(fileName, contentType, url);
-        return imageUploadResponseDto;
+    public ImageDto toImageDTO(String fileName, String contentType, String url) {
+        ImageDto imageDto = new ImageDto(fileName, contentType, createDownloadUrl(url));
+        return imageDto;
     }
 
     @Override
-    public String toImageResponseFileName(String name) {
-        ImageUploadResponse imageUploadResponse = new ImageUploadResponse();
-        imageUploadResponse.setFileName(name);
-        return imageUploadResponse.getFileName();
+    public String toImageFileName(String name) {
+        Image image = new Image();
+        image.setFileName(name);
+        return image.getFileName();
     }
 
+    @Override
+    public String createDownloadUrl(String url) {
+        String downloadUrl = url.substring(0, 21) + "/images/" + url.substring(22);
+        return downloadUrl;
+    }
+
+    @Override
+    public boolean allowFileExtension(String fileName) {
+        return !extension(fileName).equalsIgnoreCase("png") && !extension(fileName).equalsIgnoreCase("jpg");
+    }
+
+    @Override
+    public String extension(String fileName) {
+        String reverseFileName = new StringBuilder(fileName).reverse().toString();
+        int foundDotIndex = reverseFileName.indexOf(".");
+        String foundExtensionReverse = reverseFileName.substring(0, foundDotIndex);
+        return new StringBuilder(foundExtensionReverse).reverse().toString();
+    }
+
+    @Override
+    public boolean availableImageId(String fileName) {
+        return imageRepository.findByFileName(fileName).isPresent();
+    }
 }

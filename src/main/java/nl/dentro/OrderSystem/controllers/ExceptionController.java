@@ -28,4 +28,12 @@ public class ExceptionController {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = DeniedFileExtensionException.class)
+    public ResponseEntity<String> exception(DeniedFileExtensionException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+
+
+
 }

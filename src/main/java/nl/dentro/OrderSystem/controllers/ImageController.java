@@ -1,6 +1,6 @@
 package nl.dentro.OrderSystem.controllers;
 
-import nl.dentro.OrderSystem.dtos.ImageUploadResponseDto;
+import nl.dentro.OrderSystem.dtos.ImageDto;
 import nl.dentro.OrderSystem.services.ImageService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -23,10 +23,10 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @PostMapping("/upload")
-    ImageUploadResponseDto  singleFileUpload(@RequestParam("file") MultipartFile file){
-        ImageUploadResponseDto ImageUploadResponseDto = imageService.saveFile(file);
-        return ImageUploadResponseDto;
+    @PostMapping("images/upload")
+    ImageDto singleFileUpload(@RequestParam("file") MultipartFile file){
+        ImageDto ImageDto = imageService.saveFile(file);
+        return ImageDto;
     }
 
     @GetMapping("/download/{fileName}")
