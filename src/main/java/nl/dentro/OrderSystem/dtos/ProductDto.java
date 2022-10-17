@@ -7,7 +7,7 @@ public class ProductDto {
     private String category;
     private String description;
 
-    private ImageUploadResponseDto imageUploadResponseDto;
+    private ImageDto imageDto;
 
     public Long getId() {
         return id;
@@ -49,11 +49,11 @@ public class ProductDto {
         this.description = description;
     }
 
-    public ImageUploadResponseDto getImageUploadResponseDto() {
-        return imageUploadResponseDto;
+    public ImageDto getImageDto() {
+        return imageDto;
     }
 
-    public void setImageUploadResponseDto(ImageUploadResponseDto imageUploadResponseDto) {
-        this.imageUploadResponseDto = imageUploadResponseDto;
+    public void setImageDto(ImageDto imageDto) {
+        this.imageDto = imageDto;
     }
 }

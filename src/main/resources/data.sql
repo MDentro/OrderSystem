@@ -39,3 +39,8 @@ VALUES  (301, 1005);
 
 INSERT INTO order_product (order_id, product_id)
 VALUES  (302, 1002);
+
+INSERT INTO image (file_name, content_type, url)
+VALUES ('aptitlig.jpg', 'image/jpeg', 'http://localhost:8090/download/aptitlig.jpg');
+
+UPDATE products SET file_file_name='aptitlig.jpg' WHERE id=1001;

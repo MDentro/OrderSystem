@@ -1,7 +1,7 @@
 package nl.dentro.OrderSystem.controllers;
 
 import nl.dentro.OrderSystem.dtos.IdInputDto;
-import nl.dentro.OrderSystem.dtos.ImageUploadResponseDto;
+import nl.dentro.OrderSystem.dtos.ImageDto;
 import nl.dentro.OrderSystem.dtos.ProductDto;
 import nl.dentro.OrderSystem.dtos.ProductInputDto;
 import nl.dentro.OrderSystem.services.ProductService;
@@ -83,7 +83,7 @@ public class ProductController {
     public void assignImageToProduct(@PathVariable("id") Long productId,
                                      @RequestBody MultipartFile file) {
 
-        ImageUploadResponseDto imageDto = imageController.singleFileUpload(file);
+        ImageDto imageDto = imageController.singleFileUpload(file);
 
         productService.assignImageToProduct(imageDto.getFileName(), productId);
     }

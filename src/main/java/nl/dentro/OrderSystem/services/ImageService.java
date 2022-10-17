@@ -1,17 +1,25 @@
 package nl.dentro.OrderSystem.services;
 
-import nl.dentro.OrderSystem.dtos.ImageUploadResponseDto;
+import nl.dentro.OrderSystem.dtos.ImageDto;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageService {
-    ImageUploadResponseDto saveFile(MultipartFile file);
+    ImageDto saveFile(MultipartFile file);
 
     Resource downLoadFile(String fileName);
 
     void deleteImage(String fileName);
 
-    ImageUploadResponseDto toImageResponseDTO(String fileName, String contentType, String url);
+    ImageDto toImageDTO(String fileName, String contentType, String url);
 
-    String toImageResponseFileName(String name);
+    String toImageFileName(String name);
+
+    String createDownloadUrl(String url);
+
+    boolean allowFileExtension(String fileName);
+
+    String extension(String fileName);
+
+    boolean availableImageId(String fileName);
 }
