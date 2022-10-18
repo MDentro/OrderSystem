@@ -43,4 +43,17 @@ VALUES  (302, 1002);
 INSERT INTO image (file_name, content_type, url)
 VALUES ('aptitlig.jpg', 'image/jpeg', 'http://localhost:8090/download/aptitlig.jpg');
 
-UPDATE products SET file_file_name='aptitlig.jpg' WHERE id=1001;
+UPDATE products
+SET file_file_name='aptitlig.jpg' WHERE id=1001;
+
+INSERT INTO roles(role_name)
+VALUES ('USER'),
+       ('ADMIN');
+
+INSERT INTO users (user_name, password)
+VALUES  ('user', '$2a$10$7QFmubcTWlckJ3E5Gt1lUeg7uja0I8eRG3u5QWyIVh0q4LysUwv5K'),
+        ('admin', '$2a$10$6d5cTwKlASAG70Nf0UcZTOg/DDDMRx8GqZsNhb.bfEpvcrccSuVAC');
+
+INSERT INTO users_roles (users_user_name, roles_role_name)
+VALUES  ('user', 'USER'),
+        ('admin', 'ADMIN');

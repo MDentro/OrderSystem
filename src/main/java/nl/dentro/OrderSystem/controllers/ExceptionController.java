@@ -32,8 +32,8 @@ public class ExceptionController {
     public ResponseEntity<String> exception(DeniedFileExtensionException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
-
-
-
-
+    @ExceptionHandler(value = DuplicateFoundException.class)
+    public ResponseEntity<String> exception(DuplicateFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

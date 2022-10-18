@@ -15,7 +15,7 @@ import java.io.IOException;
 
 @RestController
 @CrossOrigin
-@RequestMapping("images")
+@RequestMapping("/images")
 public class ImageController {
     private final ImageService imageService;
 
@@ -23,7 +23,7 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @PostMapping("images/upload")
+    @PostMapping("/upload")
     ImageDto singleFileUpload(@RequestParam("file") MultipartFile file){
         ImageDto ImageDto = imageService.saveFile(file);
         return ImageDto;
