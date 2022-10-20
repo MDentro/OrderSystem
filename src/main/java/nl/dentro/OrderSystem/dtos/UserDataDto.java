@@ -8,6 +8,17 @@ public class UserDataDto {
     private String email;
     private String phoneNumber;
 
+    public UserDataDto(Long id, String firstName, String lastName, String email, String phoneNumber) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public UserDataDto() {
+    }
+
     public Long getId() {
         return id;
     }

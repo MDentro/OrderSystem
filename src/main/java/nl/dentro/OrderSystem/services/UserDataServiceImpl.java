@@ -59,6 +59,4 @@ public class UserDataServiceImpl implements UserDataService {
     public boolean availableUserDataId(Long id) {
         return userDataRepository.findById(id).isPresent();
     }
-
-
 }

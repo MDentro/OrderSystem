@@ -19,6 +19,17 @@ public class UserData {
     @JsonIgnore
     Order order;
 
+    public UserData(Long id, String firstName, String lastName, String email, String phoneNumber) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public UserData() {
+    }
+
     public Long getId() {
         return id;
     }
