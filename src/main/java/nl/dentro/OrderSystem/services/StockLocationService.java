@@ -16,11 +16,11 @@ public interface StockLocationService {
 
     void setStockLocationAvailable(Long id);
 
-    boolean availableStockLocationId(Long id);
-
     StockLocation fromStockLocationDto(StockLocationInputDto stockLocationInputDto);
 
     StockLocationDto toStockLocationDto(StockLocation stockLocation);
 
     List<StockLocationDto> fromStockLocationListToDtoList(List<StockLocation> stockLocations);
+
+    boolean availableStockLocationId(Long id);
 }
