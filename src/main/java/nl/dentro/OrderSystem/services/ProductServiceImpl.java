@@ -51,6 +51,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getAllProductsByCategory(String category) {
         List<Product> productList = productRepository.findAllProductsByCategoryEqualsIgnoreCase(category);
+        if (productList.size() == 0) {
+            throw new RecordNotFoundException("Could not find products with category " + category);
+        }
         return fromProductListToDtoList(productList);
     }
 
@@ -66,8 +69,48 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductDto createProduct(ProductInputDto productInputDto) {
+        Product product = fromProductDto(productInputDto);
+        Product savedProduct = productRepository.save(product);
+        ProductDto productDto = toProductDto(savedProduct);
+        return productDto;
+    }
+
+    @Override
+    public void deleteProduct(Long id) {
+        if (availableProductId(id)) {
+            Product product = productRepository.findById(id).get();
+            if (orderProductService.isProductOrdered(id)) {
+                throw new RecordCanNotBeDeletedException("Product with id: " + id + " is used on an order and cannot be deleted.");
+            } else {
+                if (searchIdToReleaseStockLocationIfNeeded(id) != -1L) {
+                    stockLocationService.setStockLocationAvailable(searchIdToReleaseStockLocationIfNeeded(id));
+                    productRepository.deleteById(id);
+                }
+                if (product.getFile() != null) {
+                    imageService.deleteImage(product.getFile().getFileName());
+                }
+            }
+        } else {
+            throw new RecordNotFoundException("Could not find product with id: " + id + ".");
+        }
+    }
+
+    @Override
+    public void updateProduct(ProductInputDto productInputDto, Long id) {
+        if (availableProductId(id)) {
+            Product updatedProduct = fromProductDto(productInputDto);
+            saveChanges(id, updatedProduct);
+        } else {
+            throw new RecordNotFoundException("Could not find product with id: " + id + ".");
+        }
+    }
+
+
+
+    @Override
     public void assignStockLocationToProduct(Long id, Long input) {
-        if (availableProductId(id) && availableStockLocationId(input)) {
+        if (availableProductId(id) && stockLocationService.availableStockLocationId(input)) {
             StockLocation stockLocation = stockLocationRepository.findById(input).get();
             if (stockLocation.isAvailable()) {
                 Product product = productRepository.findById(id).get();
@@ -79,11 +122,11 @@ public class ProductServiceImpl implements ProductService {
                 throw new AvailableStockLocationNotFoundException("Stock location  with id: " + input + " is already in use.");
             }
 
-        } else if (!availableProductId(id) && !availableStockLocationId(input)) {
+        } else if (!availableProductId(id) && !stockLocationService.availableStockLocationId(input)) {
             throw new RecordNotFoundException("Could not find product with id: " + id + " and could not find stock location with id: " + input + ".");
         } else if (!availableProductId(id)) {
             throw new RecordNotFoundException("Could not find product with id: " + id + ".");
-        } else if (!availableStockLocationId(input)) {
+        } else if (!stockLocationService.availableStockLocationId(input)) {
             throw new RecordNotFoundException("Could not find stock location with id: " + input + ".");
         }
     }
@@ -111,61 +154,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> fromProductListToDtoList(List<Product> products) {
-        List<ProductDto> productDtoList = new ArrayList<>();
-        for (Product product : products) {
-            ProductDto dto = toProductDto(product);
-            productDtoList.add(dto);
-        }
-        return productDtoList;
-    }
-
-    @Override
-    public ProductDto createProduct(ProductInputDto productInputDto) {
-        Product product = fromProductDto(productInputDto);
-        Product savedProduct = productRepository.save(product);
-        ProductDto productDto = toProductDto(savedProduct);
-        return productDto;
-    }
-
-    @Override
-    public void updateProduct(ProductInputDto productInputDto, Long id) {
-        if (availableProductId(id)) {
-            Product updatedProduct = fromProductDto(productInputDto);
-            saveChanges(id, updatedProduct);
-        } else {
-            throw new RecordNotFoundException("Could not find product with id: " + id + ".");
-        }
-    }
-
-    @Override
-    public void deleteProduct(Long id) {
-        if (availableProductId(id)) {
-            Product product = productRepository.findById(id).get();
-            if (orderProductService.isProductOrdered(id)) {
-                throw new RecordCanNotBeDeletedException("Product with id: " + id + " is used on an order and cannot be deleted.");
-            } else {
-                setStockLocationAvailable(id);
-                productRepository.deleteById(id);
-                if (product.getFile() != null) {
-                    imageService.deleteImage(product.getFile().getFileName());
-                }
-            }
-        } else {
-            throw new RecordNotFoundException("Could not find product with id: " + id + ".");
-        }
-    }
-
-    @Override
-    public void setStockLocationAvailable(Long id) {
-        Product product = productRepository.findById(id).get();
-        StockLocation stockLocation = product.getStockLocation();
-        if (stockLocation != null) {
-            stockLocation.setAvailable(true);
-        }
-    }
-
-    @Override
     public void saveChanges(Long id, Product updatedProduct) {
         Product databaseProduct = productRepository.findById(id).get();
         if (!databaseProduct.getName().equals(updatedProduct.getName())) {
@@ -181,6 +169,16 @@ public class ProductServiceImpl implements ProductService {
             databaseProduct.setDescription(updatedProduct.getDescription());
         }
         productRepository.save(databaseProduct);
+    }
+
+    @Override
+    public List<ProductDto> fromProductListToDtoList(List<Product> products) {
+        List<ProductDto> productDtoList = new ArrayList<>();
+        for (Product product : products) {
+            ProductDto dto = toProductDto(product);
+            productDtoList.add(dto);
+        }
+        return productDtoList;
     }
 
     @Override
@@ -224,13 +222,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean availableProductId(Long id) {
-        return productRepository.findById(id).isPresent();
+    public Long searchIdToReleaseStockLocationIfNeeded(Long id) {
+        Product product = productRepository.findById(id).get();
+        StockLocation stockLocation = product.getStockLocation();
+        if (stockLocation != null) {
+            return stockLocation.getId();
+        }
+        return -1L;
     }
 
     @Override
-    public boolean availableStockLocationId(Long id) {
-        return stockLocationRepository.findById(id).isPresent();
+    public boolean availableProductId(Long id) {
+        return productRepository.findById(id).isPresent();
     }
-
 }

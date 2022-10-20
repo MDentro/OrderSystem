@@ -20,7 +20,7 @@
 | Create stock location                                         | POST    | http://localhost:8090/stocklocations               | -                                      | ADMIN          |
 | Delete stock location                                         | DELETE  | http://localhost:8090/stocklocations/value         | 100 (of type Long id)                  | ADMIN          |
 | Upload image by assigning to product (delete image if exists) | POST    | http://localhost:8090/products/value/image         | 1001 (of type Long id)                 | ADMIN          |
-| Download image by fileName                                    | GET     | http://localhost:8090/images/dowload/value         | aptitlig.jpg (of type String fileName) | ALL            |
+| Download image by fileName                                    | GET     | http://localhost:8090/images/download/value        | aptitlig.jpg (of type String fileName) | ALL            |
 | Create a new user                                             | POST    | http://localhost:8090/users                        | -                                      | ALL            |
 | Sign in user                                                  | POST    | http://localhost:8090/auth                         | -                                      | ALL            |
 

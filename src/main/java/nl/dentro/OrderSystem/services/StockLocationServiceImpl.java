@@ -48,6 +48,17 @@ public class StockLocationServiceImpl implements StockLocationService {
         }
     }
 
+    @Override
+    public void setStockLocationAvailable(Long id) {
+        StockLocation stockLocation = stockLocationRepository.findById(id).get();
+        stockLocation.setAvailable(true);
+        stockLocationRepository.save(stockLocation);
+    }
+
+    @Override
+    public boolean availableStockLocationId(Long id) {
+        return stockLocationRepository.findById(id).isPresent();
+    }
 
     @Override
     public StockLocation fromStockLocationDto(StockLocationInputDto stockLocationInputDto) {
@@ -66,6 +77,7 @@ public class StockLocationServiceImpl implements StockLocationService {
         return dto;
     }
 
+    @Override
     public List<StockLocationDto> fromStockLocationListToDtoList(List<StockLocation> stockLocations) {
         List<StockLocationDto> stockLocationDtoList = new ArrayList<>();
         for (StockLocation stockLocation : stockLocations) {
