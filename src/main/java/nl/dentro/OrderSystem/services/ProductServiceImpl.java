@@ -134,7 +134,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void assignImageToProduct(String name, Long productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
-        Optional<Image> image = imageRepository.findByFileName(imageService.toImageFileName(name));
+        //Optional<Image> image = imageRepository.findByFileName(imageService.toImageFileName(name));
+        Optional<Image> image = imageRepository.findByFileName(name);
         String fileName = "";
 
         if (optionalProduct.isPresent() && image.isPresent()) {
@@ -147,11 +148,14 @@ public class ProductServiceImpl implements ProductService {
             product.setFile(photo);
             productRepository.save(product);
 
-            if (!fileName.equals(photo.getFileName())) {
+            if (!fileName.equals(photo.getFileName()) && !fileName.equals("")) {
                 imageService.deleteImage(fileName);
             }
         }
     }
+
+
+
 
     @Override
     public void saveChanges(Long id, Product updatedProduct) {

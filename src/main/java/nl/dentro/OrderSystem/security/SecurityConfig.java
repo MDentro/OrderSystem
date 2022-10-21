@@ -55,6 +55,10 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/orders/{id}", "/orders").hasAnyAuthority("USER", "ADMIN")
                 .antMatchers(HttpMethod.PUT, "/orders/{id}").hasAnyAuthority("USER", "ADMIN")
 
+                //TODO remove
+                .antMatchers(HttpMethod.DELETE,"/products/{id}").hasAuthority("ADMIN")
+
+
                 .antMatchers("/**").hasAuthority("ADMIN")
 
                 .and()

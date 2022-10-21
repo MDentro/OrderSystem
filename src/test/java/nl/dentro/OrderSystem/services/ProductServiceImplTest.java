@@ -13,6 +13,7 @@ import nl.dentro.OrderSystem.repositories.ImageRepository;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
 import nl.dentro.OrderSystem.repositories.StockLocationRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -70,6 +71,8 @@ class ProductServiceImplTest {
 
     Image aptitligImage;
 
+    Image kavalkadImage;
+
     StockLocation aptitligStocklocation;
     StockLocation vardagenStocklocation;
 
@@ -95,6 +98,7 @@ class ProductServiceImplTest {
         aptitligInputDto = new ProductInputDto("APTITLIG", 17.99, "cooking", "The chopping board collects meat and fruit juice in the milled groove and prevents it from spilling on to your worktop. You can easily turn the chopping board and use both sides when you prepare food, because it has easy-to-grip slanted edges. Made of bamboo, which is an easy-care, hardwearing natural material that is also gentle on your knives.");
 
         aptitligImage = new Image("aptitlig.jpg", "image/jpeg", "http://localhost:8090/download/aptitlig.jpg");
+        kavalkadImage = new Image("kavalkad.jpg", "image/jpeg", "http://localhost:8090/download/kavalkad.jpg");
 
         aptitligStocklocation = new StockLocation(100L, "05.12.2", false);
         vardagenStocklocation = new StockLocation(102L, "06.12.2", false);
@@ -325,8 +329,50 @@ class ProductServiceImplTest {
         assertThrows(RecordNotFoundException.class, () -> productService.assignStockLocationToProduct(id, input));
     }
 
-    // TODO assignImageToProduct
+    @Test
+    void shouldAssignImageToProductWhenGiven() {
+        String name = aptitligImage.getFileName();
+        Long productId = 1001L;
+        aptitlig.setFile(null);
+        when(productRepository.findById(productId)).thenReturn(Optional.of(aptitlig));
+        when(imageRepository.findByFileName(name)).thenReturn(Optional.of(aptitligImage));
 
+        productService.assignImageToProduct(name, productId);
+
+        assertEquals(aptitlig.getFile().getFileName(), aptitligImage.getFileName());
+        assertEquals(aptitlig.getFile().getContentType(), aptitligImage.getContentType());
+        assertEquals(aptitlig.getFile().getUrl(), aptitligImage.getUrl());
+    }
+
+    @Test
+    void shouldAssignImageToProductWhenGivenAndDeleteExistingImage() {
+        String name = aptitligImage.getFileName();
+        Long productId = 1001L;
+        aptitlig.setFile(kavalkadImage);
+        when(productRepository.findById(productId)).thenReturn(Optional.of(aptitlig));
+        when(imageRepository.findByFileName(name)).thenReturn(Optional.of(aptitligImage));
+
+        productService.assignImageToProduct(name, productId);
+
+        assertEquals(aptitlig.getFile().getFileName(), aptitligImage.getFileName());
+        assertEquals(aptitlig.getFile().getContentType(), aptitligImage.getContentType());
+        assertEquals(aptitlig.getFile().getUrl(), aptitligImage.getUrl());
+    }
+
+    @Test
+    void shouldAssignImageToProductWhenGivenAndShouldNotDeleteExistingImageWithTheSameFileNameDueToOverwriting() {
+        String name = aptitligImage.getFileName();
+        Long productId = 1001L;
+        aptitlig.setFile(aptitligImage);
+        when(productRepository.findById(productId)).thenReturn(Optional.of(aptitlig));
+        when(imageRepository.findByFileName(name)).thenReturn(Optional.of(aptitligImage));
+
+        productService.assignImageToProduct(name, productId);
+
+        assertEquals(aptitlig.getFile().getFileName(), aptitligImage.getFileName());
+        assertEquals(aptitlig.getFile().getContentType(), aptitligImage.getContentType());
+        assertEquals(aptitlig.getFile().getUrl(), aptitligImage.getUrl());
+    }
 
     @Test
     void shouldReturnProductDtoWhenProductIsGiven() {
@@ -359,7 +405,6 @@ class ProductServiceImplTest {
         assertEquals(aptitligInputDto.getPrice(), result.getPrice());
         assertEquals(aptitligInputDto.getCategory(), result.getCategory());
         assertEquals(aptitligInputDto.getDescription(), result.getDescription());
-
     }
 
 
