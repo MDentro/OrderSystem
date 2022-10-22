@@ -83,8 +83,8 @@ public class ProductServiceImpl implements ProductService {
             if (orderProductService.isProductOrdered(id)) {
                 throw new RecordCanNotBeDeletedException("Product with id: " + id + " is used on an order and cannot be deleted.");
             } else {
-                if (searchIdToReleaseStockLocationIfNeeded(id) != -1L) {
-                    stockLocationService.setStockLocationAvailable(searchIdToReleaseStockLocationIfNeeded(id));
+                if (searchIdToReleaseStockLocationIfNeeded(product) != -1L) {
+                    stockLocationService.setStockLocationAvailable(searchIdToReleaseStockLocationIfNeeded(product));
                     productRepository.deleteById(id);
                 }
                 if (product.getFile() != null) {
@@ -225,8 +225,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Long searchIdToReleaseStockLocationIfNeeded(Long id) {
-        Product product = productRepository.findById(id).get();
+    public Long searchIdToReleaseStockLocationIfNeeded(Product product) {
         StockLocation stockLocation = product.getStockLocation();
         if (stockLocation != null) {
             return stockLocation.getId();

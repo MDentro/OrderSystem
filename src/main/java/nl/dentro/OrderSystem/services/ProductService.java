@@ -26,7 +26,7 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
-    Long searchIdToReleaseStockLocationIfNeeded(Long id);
+    Long searchIdToReleaseStockLocationIfNeeded(Product product);
 
     void saveChanges(Long id, Product updatedProduct);
 

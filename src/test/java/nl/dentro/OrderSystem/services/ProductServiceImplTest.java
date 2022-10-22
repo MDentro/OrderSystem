@@ -251,7 +251,7 @@ class ProductServiceImplTest {
         product1.setStockLocation(product1Stocklocation);
         when(productRepository.findById(id)).thenReturn(Optional.of(product1));
 
-        Long result = productService.searchIdToReleaseStockLocationIfNeeded(product1.getId());
+        Long result = productService.searchIdToReleaseStockLocationIfNeeded(product1);
 
         assertEquals(100L, result);
     }
@@ -262,7 +262,7 @@ class ProductServiceImplTest {
         Long id = 1001L;
         when(productRepository.findById(id)).thenReturn(Optional.of(product1));
 
-        Long result = productService.searchIdToReleaseStockLocationIfNeeded(product1.getId());
+        Long result = productService.searchIdToReleaseStockLocationIfNeeded(product1);
 
         assertEquals(-1L, result);
 
