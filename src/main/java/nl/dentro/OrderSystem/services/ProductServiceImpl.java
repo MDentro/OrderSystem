@@ -134,7 +134,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void assignImageToProduct(String name, Long productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
-        //Optional<Image> image = imageRepository.findByFileName(imageService.toImageFileName(name));
         Optional<Image> image = imageRepository.findByFileName(name);
         String fileName = "";
 

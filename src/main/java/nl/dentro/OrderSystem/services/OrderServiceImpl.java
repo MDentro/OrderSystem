@@ -1,6 +1,7 @@
 package nl.dentro.OrderSystem.services;
 
 import nl.dentro.OrderSystem.dtos.*;
+import nl.dentro.OrderSystem.exceptions.DuplicateFoundException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
 import nl.dentro.OrderSystem.exceptions.UnpaidOrderNotFoundException;
 import nl.dentro.OrderSystem.models.*;
@@ -108,7 +109,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void CreateIdList(List<Long> idList, OrderInputDto orderInputDto) {
         for (Long id : orderInputDto.getProductIds()) {
-            idList.add(id);
+            if(idList.contains(id)) {
+                throw new DuplicateFoundException("Duplicate order id found: " + id + ".");
+            } else {
+                idList.add(id);
+            }
         }
     }
 
