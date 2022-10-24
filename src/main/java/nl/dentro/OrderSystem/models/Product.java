@@ -20,6 +20,19 @@ public class Product {
     @OneToOne
     Image file;
 
+
+    public Product(Long id, String name, Double price, String category, String description) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.description = description;
+
+    }
+
+    public Product() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -75,4 +88,5 @@ public class Product {
     public void setFile(Image file) {
         this.file = file;
     }
+
 }

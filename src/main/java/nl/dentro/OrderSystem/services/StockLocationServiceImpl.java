@@ -5,7 +5,6 @@ import nl.dentro.OrderSystem.dtos.StockLocationInputDto;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
 import nl.dentro.OrderSystem.models.StockLocation;
 import nl.dentro.OrderSystem.repositories.StockLocationRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,13 +40,19 @@ public class StockLocationServiceImpl implements StockLocationService {
 
     @Override
     public void deleteStockLocation(Long id) {
-        try {
+        if (availableStockLocationId(id)) {
             stockLocationRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } else {
             throw new RecordNotFoundException("Could not find stock location with id: " + id + ".");
         }
     }
 
+    @Override
+    public void setStockLocationAvailable(Long id) {
+        StockLocation stockLocation = stockLocationRepository.findById(id).get();
+        stockLocation.setAvailable(true);
+        stockLocationRepository.save(stockLocation);
+    }
 
     @Override
     public StockLocation fromStockLocationDto(StockLocationInputDto stockLocationInputDto) {
@@ -66,6 +71,7 @@ public class StockLocationServiceImpl implements StockLocationService {
         return dto;
     }
 
+    @Override
     public List<StockLocationDto> fromStockLocationListToDtoList(List<StockLocation> stockLocations) {
         List<StockLocationDto> stockLocationDtoList = new ArrayList<>();
         for (StockLocation stockLocation : stockLocations) {
@@ -74,4 +80,10 @@ public class StockLocationServiceImpl implements StockLocationService {
         }
         return stockLocationDtoList;
     }
+
+    @Override
+    public boolean availableStockLocationId(Long id) {
+        return stockLocationRepository.findById(id).isPresent();
+    }
+
 }

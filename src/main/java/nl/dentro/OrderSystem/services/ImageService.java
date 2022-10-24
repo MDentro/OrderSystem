@@ -13,8 +13,6 @@ public interface ImageService {
 
     ImageDto toImageDTO(String fileName, String contentType, String url);
 
-    String toImageFileName(String name);
-
     String createDownloadUrl(String url);
 
     boolean allowFileExtension(String fileName);

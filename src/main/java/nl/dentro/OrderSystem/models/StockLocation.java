@@ -17,6 +17,15 @@ public class StockLocation {
     @OneToOne(mappedBy = "stockLocation")
     Product product;
 
+    public StockLocation(Long id, String location, boolean available) {
+        this.id = id;
+        this.location = location;
+        this.available = available;
+    }
+
+    public StockLocation() {
+    }
+
     public Long getId() {
         return id;
     }

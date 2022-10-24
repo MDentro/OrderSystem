@@ -104,13 +104,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String toImageFileName(String name) {
-        Image image = new Image();
-        image.setFileName(name);
-        return image.getFileName();
-    }
-
-    @Override
     public String createDownloadUrl(String url) {
         String downloadUrl = url.substring(0, 21) + "/images/" + url.substring(22);
         return downloadUrl;

@@ -14,7 +14,13 @@ public interface StockLocationService {
 
     void deleteStockLocation(Long id);
 
+    void setStockLocationAvailable(Long id);
+
     StockLocation fromStockLocationDto(StockLocationInputDto stockLocationInputDto);
 
     StockLocationDto toStockLocationDto(StockLocation stockLocation);
+
+    List<StockLocationDto> fromStockLocationListToDtoList(List<StockLocation> stockLocations);
+
+    boolean availableStockLocationId(Long id);
 }

@@ -14,6 +14,16 @@ public class ProductInputDto {
     @Size(min = 3, max = 1000)
     private String description;
 
+    public ProductInputDto(String name, Double price, String category, String description) {
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.description = description;
+    }
+
+    public ProductInputDto() {
+    }
+
     public Long getId() {
         return id;
     }

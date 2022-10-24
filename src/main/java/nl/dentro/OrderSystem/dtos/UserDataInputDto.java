@@ -1,5 +1,6 @@
 package nl.dentro.OrderSystem.dtos;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class UserDataInputDto {
@@ -11,7 +12,7 @@ public class UserDataInputDto {
     @NotBlank
     private String lastName;
 
-    @NotBlank
+    @Email
     private String email;
 
     @NotBlank

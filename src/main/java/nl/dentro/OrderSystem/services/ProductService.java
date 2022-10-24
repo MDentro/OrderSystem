@@ -26,7 +26,7 @@ public interface ProductService {
 
     void deleteProduct(Long id);
 
-    void setStockLocationAvailable(Long id);
+    Long searchIdToReleaseStockLocationIfNeeded(Product product);
 
     void saveChanges(Long id, Product updatedProduct);
 
@@ -37,7 +37,5 @@ public interface ProductService {
     ProductOnOrderDto toProductOnOrderDto(Product product);
 
     boolean availableProductId(Long id);
-
-    boolean availableStockLocationId(Long id);
 
 }
