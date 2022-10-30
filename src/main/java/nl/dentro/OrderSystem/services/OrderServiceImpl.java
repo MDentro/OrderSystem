@@ -29,7 +29,11 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderProductRepository orderProductRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserDataService userDataService, ProductService productService, ProductRepository productRepository, OrderProductService orderProductService, OrderProductRepository orderProductRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, UserDataService userDataService,
+                            ProductService productService, ProductRepository productRepository,
+                            OrderProductService orderProductService,
+                            OrderProductRepository orderProductRepository) {
+
         this.orderRepository = orderRepository;
         this.userDataService = userDataService;
         this.productService = productService;
@@ -50,13 +54,13 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto getOrderById(Long id) {
-        if (!orderRepository.findById(id).isPresent()) {
+        if (!availableOrderId(id)) {
             throw new RecordNotFoundException("Could not find order with id " + id + ".");
         }
 
         OrderDto orderDto = new OrderDto();
         Collection productDtoList = orderDto.getProductsDtoCollection();
-        if (orderRepository.findById(id).isPresent()) {
+        if (availableOrderId(id)) {
             Order order = orderRepository.findById(id).get();
             Collection<OrderProduct> productList = orderProductRepository.findAllProductsByOrderId(id);
             for (OrderProduct orderProduct : productList) {
@@ -70,7 +74,6 @@ public class OrderServiceImpl implements OrderService {
         return orderDto;
     }
 
-
     @Override
     public void createOrder(OrderInputDto orderInputDto) {
         List<Long> idList = new ArrayList<>();
@@ -83,27 +86,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Double calculateTotalBalance(List<Long> idList) {
-        Double totalBalance = 0.0;
-        for (Long id : idList) {
-            Product product = productRepository.findById(id).get();
-            totalBalance = totalBalance + product.getPrice();
-        }
-        return totalBalance;
-    }
-
-    @Override
     public void processPayment(Long id) {
         if (!availableOrderId(id)) {
             throw new RecordNotFoundException("Could not find order with id: " + id + ".");
         }
         Order order = orderRepository.findById(id).get();
         if (order.isPaid()) {
-            throw new UnpaidOrderNotFoundException("The order with id:" + id + " is already paid.");
+            throw new UnpaidOrderNotFoundException("The order with id: " + id + " is already paid.");
         } else {
             order.setPaid(true);
             orderRepository.save(order);
         }
+    }
+
+    @Override
+    public Double calculateTotalBalance(List<Long> idList) {
+        Double totalBalance = 0.0;
+        for (Long id : idList) {
+            Product product = productRepository.findById(id).get();
+            totalBalance = totalBalance + product.getPrice();
+        }
+        return Math.round(totalBalance * 100.0) / 100.0;
     }
 
     @Override
@@ -120,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void checkExistingProductById(List<Long> idList) {
         for (Long id : idList) {
-            if (!productRepository.findById(id).isPresent()) {
+            if (!productService.availableProductId(id)) {
                 throw new RecordNotFoundException("Could not find product with id: " + id + ".");
             }
         }
@@ -133,23 +136,25 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-
+    @Override
     public UserDataInputDto createUserDataInputDto(OrderInputDto orderInputDto) {
-        return new UserDataInputDto(orderInputDto.getFirstName(), orderInputDto.getLastName(), orderInputDto.getEmail(), orderInputDto.getPhoneNumber());
+        return new UserDataInputDto(orderInputDto.getFirstName(), orderInputDto.getLastName(),
+                orderInputDto.getEmail(), orderInputDto.getPhoneNumber());
     }
 
-    public boolean availableOrderId(Long id) {
-        return orderRepository.findById(id).isPresent();
-    }
-
-
+    @Override
     public List<UnpaidOrderDto> fromUnpaidOrderListToUnpaidOrderDtoList(List<Order> unpaidOrderList) {
         List<UnpaidOrderDto> unpaidOrderDtoList = new ArrayList<>();
         for (Order order : unpaidOrderList) {
-            UnpaidOrderDto dto = new UnpaidOrderDto(order.getId(), order.getTotalPrice(), order.getUserData().getFirstName(), order.getUserData().getLastName());
+            UnpaidOrderDto dto = new UnpaidOrderDto(order.getId(), order.getTotalPrice(),
+                    order.getUserData().getFirstName(), order.getUserData().getLastName());
             unpaidOrderDtoList.add(dto);
         }
         return unpaidOrderDtoList;
     }
 
+    @Override
+    public boolean availableOrderId(Long id) {
+        return orderRepository.findById(id).isPresent();
+    }
 }

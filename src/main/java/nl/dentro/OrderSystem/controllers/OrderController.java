@@ -38,7 +38,9 @@ public class OrderController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createOrder(@Valid @RequestBody OrderInputDto orderInputDto, BindingResult br) {
+    public ResponseEntity<Object> createOrder(@Valid @RequestBody OrderInputDto orderInputDto,
+                                              BindingResult br) {
+
         if (br.hasErrors()) {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {

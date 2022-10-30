@@ -88,5 +88,4 @@ public class Product {
     public void setFile(Image file) {
         this.file = file;
     }
-
 }

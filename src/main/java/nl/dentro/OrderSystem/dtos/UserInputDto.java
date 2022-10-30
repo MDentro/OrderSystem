@@ -2,12 +2,15 @@ package nl.dentro.OrderSystem.dtos;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Arrays;
 
 public class UserInputDto {
     @Size(min = 4, max = 15)
     private String userName;
 
-    @Pattern(regexp="((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,15})", message="Your password should contain 6 tot 15 characters with at least one digit, one upper case letter, one lower case letter and one special symbol (“@#$%”)")
+    @Pattern(regexp="((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,15})", message="Your password should contain 6 " +
+            "tot 15 characters with at least one digit, one upper case letter, one lower case letter and one special " +
+            "symbol (“@#$%”)")
     private String password;
 
     @Size(min = 1, max = 2)

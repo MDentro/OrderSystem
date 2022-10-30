@@ -2,8 +2,11 @@ package nl.dentro.OrderSystem.services;
 
 import nl.dentro.OrderSystem.dtos.StockLocationDto;
 import nl.dentro.OrderSystem.dtos.StockLocationInputDto;
+import nl.dentro.OrderSystem.exceptions.RecordCanNotBeDeletedException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
+import nl.dentro.OrderSystem.models.Product;
 import nl.dentro.OrderSystem.models.StockLocation;
+import nl.dentro.OrderSystem.repositories.ProductRepository;
 import nl.dentro.OrderSystem.repositories.StockLocationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,6 +83,14 @@ class StockLocationServiceImplTest {
         stockLocationService.deleteStockLocation(anyLong());
 
         verify(stockLocationRepository).deleteById(anyLong());
+    }
+
+    @Test
+    void shouldReturnRecordCanNotBeDeletedExceptionWhenStockLocationIsInUsedByAProduct() {
+        Long id = 101L;
+        when(stockLocationRepository.findById(id)).thenReturn(Optional.of(stockLocation3));
+
+        assertThrows(RecordCanNotBeDeletedException.class, () -> stockLocationService.deleteStockLocation(id));
     }
 
     @Test

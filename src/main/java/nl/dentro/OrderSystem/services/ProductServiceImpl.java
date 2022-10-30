@@ -33,7 +33,12 @@ public class ProductServiceImpl implements ProductService {
 
     private final OrderProductService orderProductService;
 
-    public ProductServiceImpl(ProductRepository productRepository, StockLocationRepository stockLocationRepository, StockLocationService stockLocationService, ImageRepository imageRepository, ImageService imageService, OrderProductService orderProductService) {
+    public ProductServiceImpl(ProductRepository productRepository,
+                              StockLocationRepository stockLocationRepository,
+                              StockLocationService stockLocationService,
+                              ImageRepository imageRepository, ImageService imageService,
+                              OrderProductService orderProductService) {
+
         this.productRepository = productRepository;
         this.stockLocationRepository = stockLocationRepository;
         this.stockLocationService = stockLocationService;
@@ -81,16 +86,19 @@ public class ProductServiceImpl implements ProductService {
         if (availableProductId(id)) {
             Product product = productRepository.findById(id).get();
             if (orderProductService.isProductOrdered(id)) {
-                throw new RecordCanNotBeDeletedException("Product with id: " + id + " is used on an order and cannot be deleted.");
+                throw new RecordCanNotBeDeletedException("Product with id: "
+                        + id + " is used on an order and cannot be deleted.");
             } else {
+                if (product.getFile() != null) {
+                   String fileName =  product.getFile().getFileName();
+                    product.setFile(null);
+                    imageService.deleteImage(fileName);
+                }
                 if (searchIdToReleaseStockLocationIfNeeded(product) != -1L) {
                     stockLocationService.setStockLocationAvailable(searchIdToReleaseStockLocationIfNeeded(product));
-                    productRepository.deleteById(id);
-                }
-                if (product.getFile() != null) {
-                    imageService.deleteImage(product.getFile().getFileName());
                 }
             }
+            productRepository.deleteById(id);
         } else {
             throw new RecordNotFoundException("Could not find product with id: " + id + ".");
         }
@@ -106,24 +114,27 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-
-
     @Override
     public void assignStockLocationToProduct(Long id, Long input) {
         if (availableProductId(id) && stockLocationService.availableStockLocationId(input)) {
             StockLocation stockLocation = stockLocationRepository.findById(input).get();
             if (stockLocation.isAvailable()) {
                 Product product = productRepository.findById(id).get();
+                if(product.getStockLocation() != null) {
+                    stockLocationService.setStockLocationAvailable(product.getStockLocation().getId());
+                }
                 product.setStockLocation(stockLocation);
                 stockLocation.setAvailable(false);
                 productRepository.save(product);
                 stockLocationRepository.save(stockLocation);
             } else {
-                throw new AvailableStockLocationNotFoundException("Stock location  with id: " + input + " is already in use.");
+                throw new AvailableStockLocationNotFoundException("Stock location  with id: "
+                        + input + " is already in use.");
             }
 
         } else if (!availableProductId(id) && !stockLocationService.availableStockLocationId(input)) {
-            throw new RecordNotFoundException("Could not find product with id: " + id + " and could not find stock location with id: " + input + ".");
+            throw new RecordNotFoundException("Could not find product with id: " + id
+                    + " and could not find stock location with id: " + input + ".");
         } else if (!availableProductId(id)) {
             throw new RecordNotFoundException("Could not find product with id: " + id + ".");
         } else if (!stockLocationService.availableStockLocationId(input)) {
@@ -137,7 +148,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Image> image = imageRepository.findByFileName(name);
         String fileName = "";
 
-        if (optionalProduct.isPresent() && image.isPresent()) {
+        if (!optionalProduct.isEmpty() && image.isPresent()) {
             Image photo = image.get();
             Product product = optionalProduct.get();
             if (product.getFile() != null) {
@@ -151,10 +162,11 @@ public class ProductServiceImpl implements ProductService {
                 imageService.deleteImage(fileName);
             }
         }
+        else {
+            imageService.deleteImage(name);
+            throw new RecordNotFoundException("Could not find product with id " + productId + ".");
+        }
     }
-
-
-
 
     @Override
     public void saveChanges(Long id, Product updatedProduct) {
@@ -203,7 +215,8 @@ public class ProductServiceImpl implements ProductService {
         dto.setCategory(product.getCategory());
         dto.setDescription(product.getDescription());
         if (product.getFile() != null) {
-            dto.setImageDto(imageService.toImageDTO(product.getFile().getFileName(), product.getFile().getContentType(), product.getFile().getUrl()));
+            dto.setImageDto(imageService.toImageDTO(product.getFile().getFileName(),
+                    product.getFile().getContentType(), product.getFile().getUrl()));
         }
         return dto;
     }
@@ -219,7 +232,8 @@ public class ProductServiceImpl implements ProductService {
             dto.setStockLocationDto(stockLocationService.toStockLocationDto(product.getStockLocation()));
         }
         if (product.getFile() != null) {
-            dto.setImageDto(imageService.toImageDTO(product.getFile().getFileName(), product.getFile().getContentType(), product.getFile().getUrl()));
+            dto.setImageDto(imageService.toImageDTO(product.getFile().getFileName(),
+                    product.getFile().getContentType(), product.getFile().getUrl()));
         }
         return dto;
     }

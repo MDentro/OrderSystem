@@ -33,13 +33,16 @@ public class ImageController {
     ResponseEntity<Resource> downLoadSingleFile(@PathVariable String fileName, HttpServletRequest request) {
         Resource resource = imageService.downLoadFile(fileName);
         String mimeType;
+
         try{
             mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException e) {
             mimeType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
         }
 
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName=" + resource.getFilename()).body(resource);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(mimeType)).
+                header(HttpHeaders.CONTENT_DISPOSITION, "inline;fileName="
+                        + resource.getFilename()).body(resource);
     }
 
 }

@@ -11,13 +11,13 @@ public interface ImageService {
 
     void deleteImage(String fileName);
 
-    ImageDto toImageDTO(String fileName, String contentType, String url);
-
     String createDownloadUrl(String url);
 
     boolean allowFileExtension(String fileName);
 
     String extension(String fileName);
+
+    ImageDto toImageDTO(String fileName, String contentType, String url);
 
     boolean availableImageId(String fileName);
 }

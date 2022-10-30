@@ -265,7 +265,6 @@ class ProductServiceImplTest {
         Long result = productService.searchIdToReleaseStockLocationIfNeeded(product1);
 
         assertEquals(-1L, result);
-
     }
 
     @Test
@@ -280,7 +279,21 @@ class ProductServiceImplTest {
 
         assertEquals(product1.getStockLocation().getLocation(), toBeAssignedStockLocation.getLocation());
         assertEquals(product1.getStockLocation().isAvailable(), toBeAssignedStockLocation.isAvailable());
+    }
 
+    @Test
+    void shouldSetOldStockLocationAvailableWhenAssigningNewStockLocationToProduct() {
+        Long id = 1001L;
+        Long input = 103L;
+        product1.setStockLocation(product1Stocklocation);
+        when(productRepository.findById(id)).thenReturn(Optional.of(product1));
+        when(stockLocationService.availableStockLocationId(input)).thenReturn(true);
+        when(stockLocationRepository.findById(input)).thenReturn(Optional.of(toBeAssignedStockLocation));
+
+        productService.assignStockLocationToProduct(id, input);
+
+        assertEquals(product1.getStockLocation().getLocation(), toBeAssignedStockLocation.getLocation());
+        assertEquals(product1.getStockLocation().isAvailable(), toBeAssignedStockLocation.isAvailable());
     }
 
     @Test
@@ -368,6 +381,16 @@ class ProductServiceImplTest {
         assertEquals(product1.getFile().getFileName(), product1Image.getFileName());
         assertEquals(product1.getFile().getContentType(), product1Image.getContentType());
         assertEquals(product1.getFile().getUrl(), product1Image.getUrl());
+    }
+
+    @Test
+    void shouldReturnExceptionWhenTryingToAssignAnImageToAProductIfProductIdDoesNotExist() {
+        String name = product1Image.getFileName();
+        Long productId = null;
+
+        when(imageRepository.findByFileName(name)).thenReturn(Optional.of(product1Image));
+
+        assertThrows(RecordNotFoundException.class, () -> productService.assignImageToProduct(name, productId));
     }
 
     @Test

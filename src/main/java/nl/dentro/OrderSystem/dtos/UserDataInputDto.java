@@ -2,17 +2,18 @@ package nl.dentro.OrderSystem.dtos;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 public class UserDataInputDto {
 
-    private Long id;
     @NotBlank
     private String firstName;
 
     @NotBlank
     private String lastName;
 
-    @Email
+    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
+            message = "Invalid email")
     private String email;
 
     @NotBlank
@@ -24,14 +25,6 @@ public class UserDataInputDto {
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFirstName() {

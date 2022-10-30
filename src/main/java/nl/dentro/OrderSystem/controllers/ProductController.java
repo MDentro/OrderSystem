@@ -32,7 +32,9 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(value = "category", required = false) Optional<String> category) {
+    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(value = "category", required = false)
+                                                               Optional<String> category) {
+
         List<ProductDto> dtos;
         if (category.isEmpty()) {
             dtos = productService.getAllProducts();
@@ -49,7 +51,9 @@ public class ProductController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createProduct(@Valid @RequestBody ProductInputDto productInputDto, BindingResult br) {
+    public ResponseEntity<Object> createProduct(@Valid @RequestBody ProductInputDto productInputDto,
+                                                BindingResult br) {
+
         if (br.hasErrors()) {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {
@@ -59,7 +63,10 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductInputDto productInputDto, BindingResult br) {
+    public ResponseEntity<Object> updateProduct(@PathVariable Long id,
+                                                @Valid @RequestBody ProductInputDto productInputDto,
+                                                BindingResult br) {
+
         if (br.hasErrors()) {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {

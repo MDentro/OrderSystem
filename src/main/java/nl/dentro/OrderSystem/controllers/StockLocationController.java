@@ -32,7 +32,9 @@ public class StockLocationController {
 
 
     @PostMapping("")
-    public ResponseEntity<Object> createStockLocation(@Valid @RequestBody StockLocationInputDto stockLocationInputDto, BindingResult br) {
+    public ResponseEntity<Object> createStockLocation(@Valid @RequestBody StockLocationInputDto stockLocationInputDto,
+                                                      BindingResult br) {
+
         if (br.hasErrors()) {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {
