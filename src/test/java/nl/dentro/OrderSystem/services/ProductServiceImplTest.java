@@ -6,9 +6,7 @@ import nl.dentro.OrderSystem.dtos.ProductOnOrderDto;
 import nl.dentro.OrderSystem.exceptions.AvailableStockLocationNotFoundException;
 import nl.dentro.OrderSystem.exceptions.RecordCanNotBeDeletedException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
-import nl.dentro.OrderSystem.models.Image;
-import nl.dentro.OrderSystem.models.Product;
-import nl.dentro.OrderSystem.models.StockLocation;
+import nl.dentro.OrderSystem.models.*;
 import nl.dentro.OrderSystem.repositories.ImageRepository;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
 import nl.dentro.OrderSystem.repositories.StockLocationRepository;
@@ -20,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +78,15 @@ class ProductServiceImplTest {
 
     StockLocation unAvailableStockLocation;
 
+    Collection<OrderProduct> orderProductCollectionEmpty = new ArrayList<>();
+
+    Collection<OrderProduct> orderProductCollection = new ArrayList<>();
+
+    OrderProduct orderProduct;
+
+    Order order;
+
+    UserData userData;
 
     @BeforeEach
     void setUp() {
@@ -98,6 +107,18 @@ class ProductServiceImplTest {
         product2Stocklocation = new StockLocation(102L, "06.12.2", false);
         toBeAssignedStockLocation = new StockLocation(103L, "06.12.3", true);
         unAvailableStockLocation = new StockLocation(104L, "07.12.2", false);
+
+        order = new Order();
+        order.setId(300L);
+        order.setPaid(false);
+        order.setTotalPrice(27.97);
+        order.setUserData(userData);
+        orderProduct = new OrderProduct(order,product3);
+
+        orderProductCollection.add(orderProduct);
+
+        userData = new UserData(200L,"Charles", "Darwin", "charles@darwin.com", "06-12345678" );
+
     }
 
 
@@ -180,8 +201,8 @@ class ProductServiceImplTest {
     @Test
     void shouldDeleteProductWhenIdIsGiven() {
         product3.setStockLocation(product2Stocklocation);
+        product3.setOrderProduct(orderProductCollectionEmpty);
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product3));
-        when(orderProductService.isProductOrdered(anyLong())).thenReturn(false);
 
         productService.deleteProduct(anyLong());
 
@@ -192,6 +213,7 @@ class ProductServiceImplTest {
     void shouldDeleteProductImageWhenProductIsDeleted() {
         product1.setFile(product1Image);
         product1.setStockLocation(product1Stocklocation);
+        product1.setOrderProduct(orderProductCollectionEmpty);
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product1));
 
         productService.deleteProduct(anyLong());
@@ -203,7 +225,7 @@ class ProductServiceImplTest {
     void shouldReturnRecordCanNotBeDeletedExceptionWhenProductIsOrdered() {
         Long id = 1006L;
         when(productRepository.findById(anyLong())).thenReturn(Optional.of(product3));
-        when(orderProductService.isProductOrdered(id)).thenReturn(true);
+        product3.setOrderProduct(orderProductCollection);
 
         assertThrows(RecordCanNotBeDeletedException.class, () -> productService.deleteProduct(id));
     }

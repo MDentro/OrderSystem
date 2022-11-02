@@ -1,6 +1,11 @@
 package nl.dentro.OrderSystem.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(name = "orders")
@@ -13,6 +18,11 @@ public class Order {
 
     @OneToOne
     UserData userData;
+
+    @OneToMany(mappedBy = "order")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
+    Collection<OrderProduct> orderProduct;
 
     public Order( Double totalPrice, boolean paid, UserData userData) {
         this.totalPrice = totalPrice;
@@ -54,5 +64,13 @@ public class Order {
 
     public void setUserData(UserData userData) {
         this.userData = userData;
+    }
+
+    public Collection<OrderProduct> getOrderProduct() {
+        return orderProduct;
+    }
+
+    public void setOrderProduct(Collection<OrderProduct> orderProduct) {
+        this.orderProduct = orderProduct;
     }
 }

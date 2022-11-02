@@ -5,7 +5,6 @@ import nl.dentro.OrderSystem.exceptions.DuplicateFoundException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
 import nl.dentro.OrderSystem.exceptions.UnpaidOrderNotFoundException;
 import nl.dentro.OrderSystem.models.*;
-import nl.dentro.OrderSystem.repositories.OrderProductRepository;
 import nl.dentro.OrderSystem.repositories.OrderRepository;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -27,19 +26,15 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderProductService orderProductService;
 
-    private final OrderProductRepository orderProductRepository;
-
     public OrderServiceImpl(OrderRepository orderRepository, UserDataService userDataService,
                             ProductService productService, ProductRepository productRepository,
-                            OrderProductService orderProductService,
-                            OrderProductRepository orderProductRepository) {
+                            OrderProductService orderProductService) {
 
         this.orderRepository = orderRepository;
         this.userDataService = userDataService;
         this.productService = productService;
         this.productRepository = productRepository;
         this.orderProductService = orderProductService;
-        this.orderProductRepository = orderProductRepository;
     }
 
     @Override
@@ -62,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
         Collection productDtoList = orderDto.getProductsDtoCollection();
         if (availableOrderId(id)) {
             Order order = orderRepository.findById(id).get();
-            Collection<OrderProduct> productList = orderProductRepository.findAllProductsByOrderId(id);
+            Collection<OrderProduct> productList = order.getOrderProduct();
             for (OrderProduct orderProduct : productList) {
                 productDtoList.add(productService.toProductOnOrderDto(orderProduct.getProduct()));
             }

@@ -18,6 +18,14 @@ public class OrderProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    public OrderProduct(Order order, Product product) {
+        this.order = order;
+        this.product = product;
+    }
+
+    public OrderProduct() {
+    }
+
     public OrderProductKey getId() {
         return id;
     }
