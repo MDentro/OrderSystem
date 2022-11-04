@@ -23,22 +23,22 @@ VALUES  (200, 'Charles', 'Darwin', 'charles@darwin.com', '06-12345678'),
         (202, 'Isaac', 'Newton', 'isaac@newton.com', '06-18273645');
 
 INSERT INTO orders (id, paid, total_price, user_data_id)
-VALUES  (300, false, 27.97, 200),
+VALUES  (300, false, 37.95, 200),
         (301, false, 17.99, 201),
         (302, true, 4.99, 202);
 
-INSERT INTO order_product (order_id, product_id)
-VALUES  (300, 1001);
-INSERT INTO order_product (order_id, product_id)
-VALUES  (300, 1002);
-INSERT INTO order_product (order_id, product_id)
-VALUES  (300, 1003);
+INSERT INTO order_product (order_id, product_id, quantity)
+VALUES  (300, 1001, 1);
+INSERT INTO order_product (order_id, product_id, quantity)
+VALUES  (300, 1002, 2);
+INSERT INTO order_product (order_id, product_id, quantity)
+VALUES  (300, 1003, 2);
 
-INSERT INTO order_product (order_id, product_id)
-VALUES  (301, 1005);
+INSERT INTO order_product (order_id, product_id, quantity)
+VALUES  (301, 1005, 1);
 
-INSERT INTO order_product (order_id, product_id)
-VALUES  (302, 1002);
+INSERT INTO order_product (order_id, product_id, quantity)
+VALUES  (302, 1002, 1);
 
 INSERT INTO image (file_name, content_type, url)
 VALUES ('aptitlig.jpg', 'image/jpeg', 'http://localhost:8090/download/aptitlig.jpg');

@@ -59,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = orderRepository.findById(id).get();
             Collection<OrderProduct> productList = order.getOrderProduct();
             for (OrderProduct orderProduct : productList) {
-                productDtoList.add(productService.toProductOnOrderDto(orderProduct.getProduct()));
+                productDtoList.add(productService.toProductOnOrderDto(orderProduct.getProduct(), orderProduct.getQuantity()));
             }
             orderDto.setId(order.getId());
             orderDto.setUserDataDto(userDataService.toUserDataDto(order.getUserData()));
@@ -71,13 +71,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void createOrder(OrderInputDto orderInputDto) {
+        List<ShoppingItemTransport> shoppingItemList = fromShoppingItemInputDtoList(orderInputDto.getShoppingItemTransportInputDto());
+
         List<Long> idList = new ArrayList<>();
-        CreateIdList(idList, orderInputDto);
+        CreateIdList(idList, shoppingItemList);
         checkExistingProductById(idList);
+
         UserData userData = userDataService.createUserData(createUserDataInputDto(orderInputDto));
-        Order order = new Order(calculateTotalBalance(idList), false, userData);
+        Order order = new Order(calculateTotalBalance(orderInputDto.getShoppingItemTransportInputDto()), false, userData);
         Order savedOrder = orderRepository.save(order);
-        saveOrderProduct(idList, savedOrder);
+
+        for (ShoppingItemTransport item : shoppingItemList) {
+            orderProductService.saveOrderProduct(savedOrder, item.getProductId(), item.getQuantity());
+        }
     }
 
     @Override
@@ -95,22 +101,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Double calculateTotalBalance(List<Long> idList) {
+    public Double calculateTotalBalance(List<ShoppingItemTransportInputDto> shoppingItemInputDtos) {
         Double totalBalance = 0.0;
-        for (Long id : idList) {
-            Product product = productRepository.findById(id).get();
-            totalBalance = totalBalance + product.getPrice();
+        for (ShoppingItemTransport shoppingItem : fromShoppingItemInputDtoList(shoppingItemInputDtos)) {
+            Product product = productRepository.findById(shoppingItem.getProductId()).get();
+            int quantity = shoppingItem.getQuantity();
+
+            totalBalance += product.getPrice() * quantity;
         }
         return Math.round(totalBalance * 100.0) / 100.0;
     }
 
     @Override
-    public void CreateIdList(List<Long> idList, OrderInputDto orderInputDto) {
-        for (Long id : orderInputDto.getProductIds()) {
-            if(idList.contains(id)) {
-                throw new DuplicateFoundException("Duplicate order id found: " + id + ".");
+    public void CreateIdList(List<Long> idList, List<ShoppingItemTransport> shoppingItemList) {
+        for (ShoppingItemTransport item : shoppingItemList) {
+            if (idList.contains(item.getProductId())) {
+                throw new DuplicateFoundException("Duplicate order id found: " + item.getProductId() + ".");
             } else {
-                idList.add(id);
+                idList.add(item.getProductId());
             }
         }
     }
@@ -121,13 +129,6 @@ public class OrderServiceImpl implements OrderService {
             if (!productService.availableProductId(id)) {
                 throw new RecordNotFoundException("Could not find product with id: " + id + ".");
             }
-        }
-    }
-
-    @Override
-    public void saveOrderProduct(List<Long> idList, Order savedOrder) {
-        for (Long id : idList) {
-            orderProductService.saveOrderProduct(savedOrder, id);
         }
     }
 
@@ -146,6 +147,23 @@ public class OrderServiceImpl implements OrderService {
             unpaidOrderDtoList.add(dto);
         }
         return unpaidOrderDtoList;
+    }
+
+    public List<ShoppingItemTransport> fromShoppingItemInputDtoList(List<ShoppingItemTransportInputDto> shoppingItemInputDto) {
+        List<ShoppingItemTransport> shoppingItemList = new ArrayList<>();
+        for (ShoppingItemTransportInputDto dto : shoppingItemInputDto) {
+            shoppingItemList.add(fromShoppingItemDto(dto));
+        }
+        return shoppingItemList;
+    }
+
+    @Override
+    public ShoppingItemTransport fromShoppingItemDto(ShoppingItemTransportInputDto shoppingItemInputDto) {
+        var shoppingItem = new ShoppingItemTransport();
+        shoppingItem.setProductId(shoppingItemInputDto.getProductId());
+        shoppingItem.setQuantity(shoppingItemInputDto.getQuantity());
+
+        return shoppingItem;
     }
 
     @Override

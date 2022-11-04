@@ -344,16 +344,16 @@ Role: ALL\
 Body:
 ```yaml
 {
-    "firstName": "firstNameTest",
-    "lastName": "lastNameTest",
-    "email": "testEmail@mail.com",
-    "phoneNumber": "06-12345678",
-    "productIds": [1001, 1002, 1003]
+  "firstName": "firstNameTest",
+  "lastName": "lastNameTest",
+  "email": "testEmail@mail.com",
+  "phoneNumber": "06-12345678",
+  "shoppingItemTransportInputDto": [{"productId": 1001, "quantity": 1}, { "productId": 1002, "quantity": 2 }, { "productId": 1003, "quantity": 2}]
 }
 ```
 
 Description: Get order by id\
-URL: http://localhost:8090/orders/1 \
+URL: http://localhost:8090/orders/300 \
 Type: GET\
 Role: ADMIN and USER\
 Authorisation header: Bearer Token\

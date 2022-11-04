@@ -23,7 +23,7 @@ public class OrderProductServiceImpl implements OrderProductService {
     }
 
     @Override
-    public void saveOrderProduct(Order order, Long productId) {
+    public void saveOrderProduct(Order order, Long productId, int quantity) {
         OrderProduct orderProduct = new OrderProduct();
         orderProduct.setOrder(order);
         if (!productRepository.findById(productId).isPresent()) {
@@ -31,6 +31,7 @@ public class OrderProductServiceImpl implements OrderProductService {
         }
         Product product = productRepository.findById(productId).get();
         orderProduct.setProduct(product);
+        orderProduct.setQuantity(quantity);
         OrderProductKey id = new OrderProductKey(order.getId(), product.getId());
         orderProduct.setId(id);
         orderProductRepository.save(orderProduct);

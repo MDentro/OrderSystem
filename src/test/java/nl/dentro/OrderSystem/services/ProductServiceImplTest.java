@@ -11,6 +11,7 @@ import nl.dentro.OrderSystem.repositories.ImageRepository;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
 import nl.dentro.OrderSystem.repositories.StockLocationRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -427,12 +428,14 @@ class ProductServiceImplTest {
         assertEquals(product1Dto.getDescription(), result.getDescription());
     }
 
+
     @Test
     void shouldReturnProductOnOrderDtoWhenProductIsGiven() {
         product1.setFile(product1Image);
         product1.setStockLocation(product1Stocklocation);
+        int quantity = 1;
 
-        ProductOnOrderDto result = productService.toProductOnOrderDto(product1);
+        ProductOnOrderDto result = productService.toProductOnOrderDto(product1, quantity);
 
         assertEquals(product1Dto.getName(), result.getName());
         assertEquals(product1Dto.getPrice(), result.getPrice());

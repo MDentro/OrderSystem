@@ -223,12 +223,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductOnOrderDto toProductOnOrderDto(Product product) {
+    public ProductOnOrderDto toProductOnOrderDto(Product product, int quantity) {
         var dto = new ProductOnOrderDto();
         dto.setId(product.getId());
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
         dto.setCategory(product.getCategory());
+        dto.setQuantity(quantity);
         if (product.getStockLocation() != null) {
             dto.setStockLocationDto(stockLocationService.toStockLocationDto(product.getStockLocation()));
         }
