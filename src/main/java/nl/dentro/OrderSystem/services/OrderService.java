@@ -14,19 +14,21 @@ public interface OrderService {
 
     void createOrder(OrderInputDto orderInputDto);
 
-    ShoppingItemTransport fromShoppingItemDto(ShoppingItemTransportInputDto shoppingItemInputDto);
-
     void processPayment(Long id);
 
     Double calculateTotalBalance(List<ShoppingItemTransportInputDto> shoppingItemInputDtos);
 
-    void CreateIdList(List<Long> idList, List<ShoppingItemTransport> shoppingItemList);
+    void createIdList(List<Long> idList, List<ShoppingItemTransport> shoppingItemList);
 
     void checkExistingProductById(List<Long> idList);
 
     UserDataInputDto createUserDataInputDto(OrderInputDto orderInputDto);
 
     List<UnpaidOrderDto> fromUnpaidOrderListToUnpaidOrderDtoList(List<Order> unpaidOrderList);
+
+    List<ShoppingItemTransport> fromShoppingItemInputDtoList(List<ShoppingItemTransportInputDto> shoppingItemInputDto);
+
+    ShoppingItemTransport fromShoppingItemDto(ShoppingItemTransportInputDto shoppingItemInputDto);
 
     boolean availableOrderId(Long id);
 }

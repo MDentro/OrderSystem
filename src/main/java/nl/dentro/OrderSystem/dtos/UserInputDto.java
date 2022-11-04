@@ -2,7 +2,6 @@ package nl.dentro.OrderSystem.dtos;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.Arrays;
 
 public class UserInputDto {
     @Size(min = 4, max = 15)

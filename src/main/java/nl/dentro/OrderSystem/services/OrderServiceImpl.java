@@ -74,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
         List<ShoppingItemTransport> shoppingItemList = fromShoppingItemInputDtoList(orderInputDto.getShoppingItemTransportInputDto());
 
         List<Long> idList = new ArrayList<>();
-        CreateIdList(idList, shoppingItemList);
+        createIdList(idList, shoppingItemList);
         checkExistingProductById(idList);
 
         UserData userData = userDataService.createUserData(createUserDataInputDto(orderInputDto));
@@ -113,7 +113,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void CreateIdList(List<Long> idList, List<ShoppingItemTransport> shoppingItemList) {
+    public void createIdList(List<Long> idList, List<ShoppingItemTransport> shoppingItemList) {
         for (ShoppingItemTransport item : shoppingItemList) {
             if (idList.contains(item.getProductId())) {
                 throw new DuplicateFoundException("Duplicate order id found: " + item.getProductId() + ".");
@@ -149,6 +149,7 @@ public class OrderServiceImpl implements OrderService {
         return unpaidOrderDtoList;
     }
 
+    @Override
     public List<ShoppingItemTransport> fromShoppingItemInputDtoList(List<ShoppingItemTransportInputDto> shoppingItemInputDto) {
         List<ShoppingItemTransport> shoppingItemList = new ArrayList<>();
         for (ShoppingItemTransportInputDto dto : shoppingItemInputDto) {

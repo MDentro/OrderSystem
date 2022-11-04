@@ -36,5 +36,4 @@ public class OrderProductKey  implements Serializable {
     public void setProductId(Long productId) {
         this.productId = productId;
     }
-
 }

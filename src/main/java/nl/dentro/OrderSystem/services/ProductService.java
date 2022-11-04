@@ -34,7 +34,6 @@ public interface ProductService {
 
     ProductDto toProductDto(Product product);
 
-
     ProductOnOrderDto toProductOnOrderDto(Product product, int quantity);
 
     Long searchIdToReleaseStockLocationIfNeeded(Product product);

@@ -94,5 +94,4 @@ public class ProductController {
 
         productService.assignImageToProduct(imageDto.getFileName(), productId);
     }
-
 }
