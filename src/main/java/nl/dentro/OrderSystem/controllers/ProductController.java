@@ -71,7 +71,7 @@ public class ProductController {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {
             productService.updateProduct(productInputDto, id);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>("The product is updated.", HttpStatus.OK);
         }
     }
 
@@ -82,8 +82,9 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/stocklocation")
-    public void assignStockLocationToProduct(@PathVariable("id") Long id, @RequestBody IdInputDto input) {
+    public ResponseEntity<Object> assignStockLocationToProduct(@PathVariable("id") Long id, @RequestBody IdInputDto input) {
         productService.assignStockLocationToProduct(id, input.getId());
+        return new ResponseEntity<>("The stock location is assigned.", HttpStatus.OK);
     }
 
     @PostMapping("/{id}/image")
