@@ -57,5 +57,4 @@ public class StockLocation {
     public void setAvailable(boolean available) {
         this.available = available;
     }
-
 }

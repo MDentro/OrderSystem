@@ -38,20 +38,20 @@ public class OrderController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createOrder(@Valid @RequestBody OrderInputDto orderInputDto, BindingResult br) {
+    public ResponseEntity<Object> createOrder(@Valid @RequestBody OrderInputDto orderInputDto,
+                                              BindingResult br) {
+
         if (br.hasErrors()) {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {
             orderService.createOrder(orderInputDto);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>("Thank you for your order. We will contact you soon.", HttpStatus.CREATED);
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> processPayment(@PathVariable Long id) {
         orderService.processPayment(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("The order is now paid.", HttpStatus.OK);
     }
-
-
 }

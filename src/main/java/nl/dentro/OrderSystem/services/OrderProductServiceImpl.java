@@ -15,13 +15,15 @@ public class OrderProductServiceImpl implements OrderProductService {
 
     private final ProductRepository productRepository;
 
-    public OrderProductServiceImpl(OrderProductRepository orderProductRepository, ProductRepository productRepository) {
+    public OrderProductServiceImpl(OrderProductRepository orderProductRepository,
+                                   ProductRepository productRepository) {
+
         this.orderProductRepository = orderProductRepository;
         this.productRepository = productRepository;
     }
 
     @Override
-    public void saveOrderProduct(Order order, Long productId) {
+    public void saveOrderProduct(Order order, Long productId, int quantity) {
         OrderProduct orderProduct = new OrderProduct();
         orderProduct.setOrder(order);
         if (!productRepository.findById(productId).isPresent()) {
@@ -29,17 +31,9 @@ public class OrderProductServiceImpl implements OrderProductService {
         }
         Product product = productRepository.findById(productId).get();
         orderProduct.setProduct(product);
+        orderProduct.setQuantity(quantity);
         OrderProductKey id = new OrderProductKey(order.getId(), product.getId());
         orderProduct.setId(id);
         orderProductRepository.save(orderProduct);
-    }
-
-    @Override
-    public boolean isProductOrdered(Long id) {
-        if (orderProductRepository.findAllOrdersByProductId(id).isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
     }
 }

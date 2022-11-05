@@ -1,7 +1,7 @@
 package nl.dentro.OrderSystem.exceptions;
 
 public class UnpaidOrderNotFoundException extends RuntimeException{
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
     public UnpaidOrderNotFoundException() {
         super();

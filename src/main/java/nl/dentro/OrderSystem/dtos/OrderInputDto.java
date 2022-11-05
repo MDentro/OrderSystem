@@ -1,34 +1,32 @@
 package nl.dentro.OrderSystem.dtos;
 
+import javax.persistence.OneToMany;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 public class OrderInputDto {
 
-    private Long id;
     @NotBlank
     private String firstName;
 
     @NotBlank
     private String lastName;
 
-    @NotBlank
+    @Pattern(regexp= "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
+            message="Invalid email")
     private String email;
 
     @NotBlank
     private String phoneNumber;
 
-
-    private Collection<Long> productIds = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "OrderInputDto")
+    @Size(min = 1, max = 20)
+    @Valid
+    List<ShoppingItemTransportInputDto> shoppingItemTransportInputDto = new ArrayList<>();
 
     public String getFirstName() {
         return firstName;
@@ -62,12 +60,11 @@ public class OrderInputDto {
         this.phoneNumber = phoneNumber;
     }
 
-    public Collection<Long> getProductIds() {
-        return productIds;
+    public List<ShoppingItemTransportInputDto> getShoppingItemTransportInputDto() {
+        return shoppingItemTransportInputDto;
     }
 
-    public void setProductIds(Collection<Long> productIds) {
-        this.productIds = productIds;
+    public void setShoppingItemTransportInputDto(List<ShoppingItemTransportInputDto> shoppingItemTransportInputDto) {
+        this.shoppingItemTransportInputDto = shoppingItemTransportInputDto;
     }
-
 }

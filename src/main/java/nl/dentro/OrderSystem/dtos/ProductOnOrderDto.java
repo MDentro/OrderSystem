@@ -6,6 +6,8 @@ public class ProductOnOrderDto {
     private Double price;
     private String category;
 
+    private int quantity;
+
     private StockLocationDto stockLocationDto;
 
     private ImageDto imageDto;
@@ -40,6 +42,14 @@ public class ProductOnOrderDto {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public StockLocationDto getStockLocationDto() {

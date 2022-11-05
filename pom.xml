@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>nl.dentro</groupId>
 	<artifactId>OrderSystem</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>OrderSystem</name>
 	<description>OrderSystem</description>
 	<properties>
@@ -68,7 +68,13 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<version>5.7.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>

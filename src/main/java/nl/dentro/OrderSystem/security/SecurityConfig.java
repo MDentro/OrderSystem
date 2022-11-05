@@ -25,7 +25,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http, PasswordEncoder encoder, UserDetailsService udService) throws Exception {
+    public AuthenticationManager authManager(HttpSecurity http, PasswordEncoder encoder,
+                                             UserDetailsService udService) throws Exception {
+
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(udService)
                 .passwordEncoder(encoder)
@@ -50,7 +52,7 @@ public class SecurityConfig {
                 .authorizeRequests()
 
                 .antMatchers(HttpMethod.GET, "/products", "/products/{id}", "/images/download/{fileName}").permitAll()
-                .antMatchers(HttpMethod.POST, "/orders", "/users", "/roles", "/auth").permitAll()
+                .antMatchers(HttpMethod.POST, "/orders", "/users", "/auth").permitAll()
 
                 .antMatchers(HttpMethod.GET, "/orders/{id}", "/orders").hasAnyAuthority("USER", "ADMIN")
                 .antMatchers(HttpMethod.PUT, "/orders/{id}").hasAnyAuthority("USER", "ADMIN")
@@ -58,7 +60,8 @@ public class SecurityConfig {
                 .antMatchers("/**").hasAuthority("ADMIN")
 
                 .and()
-                .addFilterBefore(new JwtRequestFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRequestFilter(jwtService, userDetailsService()),
+                        UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

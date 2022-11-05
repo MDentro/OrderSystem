@@ -1,26 +1,34 @@
 package nl.dentro.OrderSystem.services;
 
-import nl.dentro.OrderSystem.dtos.OrderDto;
-import nl.dentro.OrderSystem.dtos.OrderInputDto;
-import nl.dentro.OrderSystem.dtos.UnpaidOrderDto;
+import nl.dentro.OrderSystem.dtos.*;
 import nl.dentro.OrderSystem.models.Order;
+import nl.dentro.OrderSystem.models.ShoppingItemTransport;
 
 import java.util.List;
 
 public interface OrderService {
+
     List<UnpaidOrderDto> getUnpaidOrders();
 
     OrderDto getOrderById(Long id);
 
     void createOrder(OrderInputDto orderInputDto);
 
-    Double calculateTotalBalance(List<Long> idList);
-
     void processPayment(Long id);
 
-    void CreateIdList(List<Long> idList, OrderInputDto orderInputDto);
+    Double calculateTotalBalance(List<ShoppingItemTransportInputDto> shoppingItemInputDtos);
+
+    void createIdList(List<Long> idList, List<ShoppingItemTransport> shoppingItemList);
 
     void checkExistingProductById(List<Long> idList);
 
-    void saveOrderProduct(List<Long> idList, Order savedOrder);
+    UserDataInputDto createUserDataInputDto(OrderInputDto orderInputDto);
+
+    List<UnpaidOrderDto> fromUnpaidOrderListToUnpaidOrderDtoList(List<Order> unpaidOrderList);
+
+    List<ShoppingItemTransport> fromShoppingItemInputDtoList(List<ShoppingItemTransportInputDto> shoppingItemInputDto);
+
+    ShoppingItemTransport fromShoppingItemDto(ShoppingItemTransportInputDto shoppingItemInputDto);
+
+    boolean availableOrderId(Long id);
 }

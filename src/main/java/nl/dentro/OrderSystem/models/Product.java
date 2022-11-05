@@ -1,6 +1,9 @@
 package nl.dentro.OrderSystem.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(name = "products")
@@ -20,6 +23,9 @@ public class Product {
     @OneToOne
     Image file;
 
+    @OneToMany(mappedBy = "product")
+    @JsonIgnore
+    Collection<OrderProduct> orderProduct;
 
     public Product(Long id, String name, Double price, String category, String description) {
         this.id = id;
@@ -89,4 +95,11 @@ public class Product {
         this.file = file;
     }
 
+    public Collection<OrderProduct> getOrderProduct() {
+        return orderProduct;
+    }
+
+    public void setOrderProduct(Collection<OrderProduct> orderProduct) {
+        this.orderProduct = orderProduct;
+    }
 }

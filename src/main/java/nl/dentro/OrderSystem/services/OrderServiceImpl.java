@@ -5,7 +5,6 @@ import nl.dentro.OrderSystem.exceptions.DuplicateFoundException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
 import nl.dentro.OrderSystem.exceptions.UnpaidOrderNotFoundException;
 import nl.dentro.OrderSystem.models.*;
-import nl.dentro.OrderSystem.repositories.OrderProductRepository;
 import nl.dentro.OrderSystem.repositories.OrderRepository;
 import nl.dentro.OrderSystem.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -27,15 +26,15 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderProductService orderProductService;
 
-    private final OrderProductRepository orderProductRepository;
+    public OrderServiceImpl(OrderRepository orderRepository, UserDataService userDataService,
+                            ProductService productService, ProductRepository productRepository,
+                            OrderProductService orderProductService) {
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserDataService userDataService, ProductService productService, ProductRepository productRepository, OrderProductService orderProductService, OrderProductRepository orderProductRepository) {
         this.orderRepository = orderRepository;
         this.userDataService = userDataService;
         this.productService = productService;
         this.productRepository = productRepository;
         this.orderProductService = orderProductService;
-        this.orderProductRepository = orderProductRepository;
     }
 
     @Override
@@ -50,17 +49,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto getOrderById(Long id) {
-        if (!orderRepository.findById(id).isPresent()) {
+        if (!availableOrderId(id)) {
             throw new RecordNotFoundException("Could not find order with id " + id + ".");
         }
 
         OrderDto orderDto = new OrderDto();
         Collection productDtoList = orderDto.getProductsDtoCollection();
-        if (orderRepository.findById(id).isPresent()) {
+        if (availableOrderId(id)) {
             Order order = orderRepository.findById(id).get();
-            Collection<OrderProduct> productList = orderProductRepository.findAllProductsByOrderId(id);
+            Collection<OrderProduct> productList = order.getOrderProduct();
             for (OrderProduct orderProduct : productList) {
-                productDtoList.add(productService.toProductOnOrderDto(orderProduct.getProduct()));
+                productDtoList.add(productService.toProductOnOrderDto(orderProduct.getProduct(), orderProduct.getQuantity()));
             }
             orderDto.setId(order.getId());
             orderDto.setUserDataDto(userDataService.toUserDataDto(order.getUserData()));
@@ -70,26 +69,21 @@ public class OrderServiceImpl implements OrderService {
         return orderDto;
     }
 
-
     @Override
     public void createOrder(OrderInputDto orderInputDto) {
-        List<Long> idList = new ArrayList<>();
-        CreateIdList(idList, orderInputDto);
-        checkExistingProductById(idList);
-        UserData userData = userDataService.createUserData(createUserDataInputDto(orderInputDto));
-        Order order = new Order(calculateTotalBalance(idList), false, userData);
-        Order savedOrder = orderRepository.save(order);
-        saveOrderProduct(idList, savedOrder);
-    }
+        List<ShoppingItemTransport> shoppingItemList = fromShoppingItemInputDtoList(orderInputDto.getShoppingItemTransportInputDto());
 
-    @Override
-    public Double calculateTotalBalance(List<Long> idList) {
-        Double totalBalance = 0.0;
-        for (Long id : idList) {
-            Product product = productRepository.findById(id).get();
-            totalBalance = totalBalance + product.getPrice();
+        List<Long> idList = new ArrayList<>();
+        createIdList(idList, shoppingItemList);
+        checkExistingProductById(idList);
+
+        UserData userData = userDataService.createUserData(createUserDataInputDto(orderInputDto));
+        Order order = new Order(calculateTotalBalance(orderInputDto.getShoppingItemTransportInputDto()), false, userData);
+        Order savedOrder = orderRepository.save(order);
+
+        for (ShoppingItemTransport item : shoppingItemList) {
+            orderProductService.saveOrderProduct(savedOrder, item.getProductId(), item.getQuantity());
         }
-        return totalBalance;
     }
 
     @Override
@@ -99,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
         }
         Order order = orderRepository.findById(id).get();
         if (order.isPaid()) {
-            throw new UnpaidOrderNotFoundException("The order with id:" + id + " is already paid.");
+            throw new UnpaidOrderNotFoundException("The order with id: " + id + " is already paid.");
         } else {
             order.setPaid(true);
             orderRepository.save(order);
@@ -107,12 +101,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void CreateIdList(List<Long> idList, OrderInputDto orderInputDto) {
-        for (Long id : orderInputDto.getProductIds()) {
-            if(idList.contains(id)) {
-                throw new DuplicateFoundException("Duplicate order id found: " + id + ".");
+    public Double calculateTotalBalance(List<ShoppingItemTransportInputDto> shoppingItemInputDtos) {
+        Double totalBalance = 0.0;
+        for (ShoppingItemTransport shoppingItem : fromShoppingItemInputDtoList(shoppingItemInputDtos)) {
+            Product product = productRepository.findById(shoppingItem.getProductId()).get();
+            int quantity = shoppingItem.getQuantity();
+
+            totalBalance += product.getPrice() * quantity;
+        }
+        return Math.round(totalBalance * 100.0) / 100.0;
+    }
+
+    @Override
+    public void createIdList(List<Long> idList, List<ShoppingItemTransport> shoppingItemList) {
+        for (ShoppingItemTransport item : shoppingItemList) {
+            if (idList.contains(item.getProductId())) {
+                throw new DuplicateFoundException("Duplicate order id found: " + item.getProductId() + ".");
             } else {
-                idList.add(id);
+                idList.add(item.getProductId());
             }
         }
     }
@@ -120,36 +126,49 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void checkExistingProductById(List<Long> idList) {
         for (Long id : idList) {
-            if (!productRepository.findById(id).isPresent()) {
+            if (!productService.availableProductId(id)) {
                 throw new RecordNotFoundException("Could not find product with id: " + id + ".");
             }
         }
     }
 
     @Override
-    public void saveOrderProduct(List<Long> idList, Order savedOrder) {
-        for (Long id : idList) {
-            orderProductService.saveOrderProduct(savedOrder, id);
-        }
-    }
-
-
     public UserDataInputDto createUserDataInputDto(OrderInputDto orderInputDto) {
-        return new UserDataInputDto(orderInputDto.getFirstName(), orderInputDto.getLastName(), orderInputDto.getEmail(), orderInputDto.getPhoneNumber());
+        return new UserDataInputDto(orderInputDto.getFirstName(), orderInputDto.getLastName(),
+                orderInputDto.getEmail(), orderInputDto.getPhoneNumber());
     }
 
-    public boolean availableOrderId(Long id) {
-        return orderRepository.findById(id).isPresent();
-    }
-
-
+    @Override
     public List<UnpaidOrderDto> fromUnpaidOrderListToUnpaidOrderDtoList(List<Order> unpaidOrderList) {
         List<UnpaidOrderDto> unpaidOrderDtoList = new ArrayList<>();
         for (Order order : unpaidOrderList) {
-            UnpaidOrderDto dto = new UnpaidOrderDto(order.getId(), order.getTotalPrice(), order.getUserData().getFirstName(), order.getUserData().getLastName());
+            UnpaidOrderDto dto = new UnpaidOrderDto(order.getId(), order.getTotalPrice(),
+                    order.getUserData().getFirstName(), order.getUserData().getLastName());
             unpaidOrderDtoList.add(dto);
         }
         return unpaidOrderDtoList;
     }
 
+    @Override
+    public List<ShoppingItemTransport> fromShoppingItemInputDtoList(List<ShoppingItemTransportInputDto> shoppingItemInputDto) {
+        List<ShoppingItemTransport> shoppingItemList = new ArrayList<>();
+        for (ShoppingItemTransportInputDto dto : shoppingItemInputDto) {
+            shoppingItemList.add(fromShoppingItemDto(dto));
+        }
+        return shoppingItemList;
+    }
+
+    @Override
+    public ShoppingItemTransport fromShoppingItemDto(ShoppingItemTransportInputDto shoppingItemInputDto) {
+        var shoppingItem = new ShoppingItemTransport();
+        shoppingItem.setProductId(shoppingItemInputDto.getProductId());
+        shoppingItem.setQuantity(shoppingItemInputDto.getQuantity());
+
+        return shoppingItem;
+    }
+
+    @Override
+    public boolean availableOrderId(Long id) {
+        return orderRepository.findById(id).isPresent();
+    }
 }

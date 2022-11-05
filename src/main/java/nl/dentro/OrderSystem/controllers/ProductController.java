@@ -32,7 +32,9 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(value = "category", required = false) Optional<String> category) {
+    public ResponseEntity<List<ProductDto>> getAllProducts(@RequestParam(value = "category", required = false)
+                                                               Optional<String> category) {
+
         List<ProductDto> dtos;
         if (category.isEmpty()) {
             dtos = productService.getAllProducts();
@@ -49,7 +51,9 @@ public class ProductController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createProduct(@Valid @RequestBody ProductInputDto productInputDto, BindingResult br) {
+    public ResponseEntity<Object> createProduct(@Valid @RequestBody ProductInputDto productInputDto,
+                                                BindingResult br) {
+
         if (br.hasErrors()) {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {
@@ -59,12 +63,15 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductInputDto productInputDto, BindingResult br) {
+    public ResponseEntity<Object> updateProduct(@PathVariable Long id,
+                                                @Valid @RequestBody ProductInputDto productInputDto,
+                                                BindingResult br) {
+
         if (br.hasErrors()) {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {
             productService.updateProduct(productInputDto, id);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>("The product is updated.", HttpStatus.OK);
         }
     }
 
@@ -75,8 +82,9 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/stocklocation")
-    public void assignStockLocationToProduct(@PathVariable("id") Long id, @RequestBody IdInputDto input) {
+    public ResponseEntity<Object> assignStockLocationToProduct(@PathVariable("id") Long id, @RequestBody IdInputDto input) {
         productService.assignStockLocationToProduct(id, input.getId());
+        return new ResponseEntity<>("The stock location is assigned.", HttpStatus.OK);
     }
 
     @PostMapping("/{id}/image")
@@ -87,5 +95,4 @@ public class ProductController {
 
         productService.assignImageToProduct(imageDto.getFileName(), productId);
     }
-
 }

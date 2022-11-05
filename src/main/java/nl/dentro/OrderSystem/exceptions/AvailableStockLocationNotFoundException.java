@@ -1,7 +1,7 @@
 package nl.dentro.OrderSystem.exceptions;
 
 public class AvailableStockLocationNotFoundException extends RuntimeException{
-    private static final long serialVersionUID = 3L;
+    private static final long serialVersionUID = 1L;
 
     public AvailableStockLocationNotFoundException() {
         super();

@@ -2,6 +2,7 @@ package nl.dentro.OrderSystem.services;
 
 import nl.dentro.OrderSystem.dtos.StockLocationDto;
 import nl.dentro.OrderSystem.dtos.StockLocationInputDto;
+import nl.dentro.OrderSystem.exceptions.RecordCanNotBeDeletedException;
 import nl.dentro.OrderSystem.exceptions.RecordNotFoundException;
 import nl.dentro.OrderSystem.models.StockLocation;
 import nl.dentro.OrderSystem.repositories.StockLocationRepository;
@@ -41,7 +42,14 @@ public class StockLocationServiceImpl implements StockLocationService {
     @Override
     public void deleteStockLocation(Long id) {
         if (availableStockLocationId(id)) {
-            stockLocationRepository.deleteById(id);
+            StockLocation stockLocation = stockLocationRepository.findById(id).get();
+            if(stockLocation.isAvailable()) {
+                stockLocationRepository.deleteById(id);
+            } else {
+                throw new RecordCanNotBeDeletedException("Stock location with id: " + id
+                        + " is in use by a product and cannot be deleted.");
+            }
+
         } else {
             throw new RecordNotFoundException("Could not find stock location with id: " + id + ".");
         }
@@ -85,5 +93,4 @@ public class StockLocationServiceImpl implements StockLocationService {
     public boolean availableStockLocationId(Long id) {
         return stockLocationRepository.findById(id).isPresent();
     }
-
 }

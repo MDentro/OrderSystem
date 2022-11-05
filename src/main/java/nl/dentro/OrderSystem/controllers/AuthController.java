@@ -35,7 +35,8 @@ public class AuthController {
             return new ResponseEntity<>(getValidationErrorMessage(br), HttpStatus.BAD_REQUEST);
         } else {
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(authInputDto.getUserName(), authInputDto.getPassword());
+                    new UsernamePasswordAuthenticationToken(authInputDto.getUserName(),
+                            authInputDto.getPassword());
 
             try {
                 Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);

@@ -25,11 +25,14 @@ import java.util.Objects;
 public class ImageServiceImpl implements ImageService {
     @Value("${my.upload_location}")
     private Path fileStoragePath;
+
     private final String fileStorageLocation;
 
     private final ImageRepository imageRepository;
 
-    public ImageServiceImpl(@Value("${my.upload_location}") String fileStorageLocation, ImageRepository imageRepository) {
+    public ImageServiceImpl(@Value("${my.upload_location}") String fileStorageLocation,
+                            ImageRepository imageRepository) {
+
         fileStoragePath = Paths.get(fileStorageLocation).toAbsolutePath().normalize();
 
         this.fileStorageLocation = fileStorageLocation;
@@ -40,17 +43,19 @@ public class ImageServiceImpl implements ImageService {
         } catch (IOException e) {
             throw new RuntimeException("Issue in creating file directory");
         }
-
     }
 
     @Override
     public ImageDto saveFile(MultipartFile file) {
-        String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/download/").path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
+        String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/download/")
+                .path(Objects.requireNonNull(file.getOriginalFilename())).toUriString();
         String contentType = file.getContentType();
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
         if (allowFileExtension(fileName)) {
-            throw new DeniedFileExtensionException("Only file extensions: jpg / JPG / png / PNG are accepted, now your extension is: " + extension(fileName));
+            throw new DeniedFileExtensionException
+                    ("Only file extensions: jpg / JPG / png / PNG are accepted, now your extension is: "
+                            + extension(fileName));
         }
 
         Path filePath = Paths.get(fileStoragePath + "\\" + fileName);
@@ -80,7 +85,8 @@ public class ImageServiceImpl implements ImageService {
         if (resource.exists() && resource.isReadable()) {
             return resource;
         } else {
-            throw new RecordNotFoundException("Could not find the image with the name: " + fileName + ". Or the image isn't readable.");
+            throw new RecordNotFoundException("Could not find the image with the name: "
+                    + fileName + ". Or the image isn't readable.");
         }
     }
 
@@ -98,12 +104,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ImageDto toImageDTO(String fileName, String contentType, String url) {
-        ImageDto imageDto = new ImageDto(fileName, contentType, createDownloadUrl(url));
-        return imageDto;
-    }
-
-    @Override
     public String createDownloadUrl(String url) {
         String downloadUrl = url.substring(0, 21) + "/images/" + url.substring(22);
         return downloadUrl;
@@ -111,7 +111,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean allowFileExtension(String fileName) {
-        return !extension(fileName).equalsIgnoreCase("png") && !extension(fileName).equalsIgnoreCase("jpg");
+        return !extension(fileName).equalsIgnoreCase("png") && !extension(fileName)
+                .equalsIgnoreCase("jpg");
     }
 
     @Override
@@ -120,6 +121,12 @@ public class ImageServiceImpl implements ImageService {
         int foundDotIndex = reverseFileName.indexOf(".");
         String foundExtensionReverse = reverseFileName.substring(0, foundDotIndex);
         return new StringBuilder(foundExtensionReverse).reverse().toString();
+    }
+
+    @Override
+    public ImageDto toImageDTO(String fileName, String contentType, String url) {
+        ImageDto imageDto = new ImageDto(fileName, contentType, createDownloadUrl(url));
+        return imageDto;
     }
 
     @Override

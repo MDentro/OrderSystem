@@ -18,6 +18,16 @@ public class OrderProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    private int quantity;
+
+    public OrderProduct(Order order, Product product) {
+        this.order = order;
+        this.product = product;
+    }
+
+    public OrderProduct() {
+    }
+
     public OrderProductKey getId() {
         return id;
     }
@@ -40,5 +50,13 @@ public class OrderProduct {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

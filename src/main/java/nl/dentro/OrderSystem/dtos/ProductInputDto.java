@@ -1,13 +1,15 @@
 package nl.dentro.OrderSystem.dtos;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class ProductInputDto {
-    private Long id;
+
     @Size(min = 3, max = 40)
     private String name;
     @Min(value = 1)
+    @NotNull
     private Double price;
     @Size(min = 3, max = 40)
     private String category;
@@ -24,13 +26,6 @@ public class ProductInputDto {
     public ProductInputDto() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -63,5 +58,4 @@ public class ProductInputDto {
     public void setDescription(String description) {
         this.description = description;
     }
-
 }
